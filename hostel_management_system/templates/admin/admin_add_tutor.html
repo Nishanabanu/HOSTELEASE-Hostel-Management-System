@@ -5,6 +5,12 @@ Admin | Add Tutor
 {% endblock title %}
 {% block body %}
 
+
+{% if success %}
+    <div id="success-message" style="background-color: #d4edda; color: #155724; padding: 10px; border-radius: 5px; border: 1px solid #c3e6cb; text-align: center; margin-bottom: 20px;">
+        Tutor added successfully! Redirecting...
+    </div>
+{% endif %}
 <form method="POST" id="add_tutor" action="{% url 'admin_add_tutor' %}" enctype="multipart/form-data" style="max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
     {% csrf_token %}
     <h2 style="text-align: center; margin-bottom: 20px;">Add Tutor</h2>
@@ -54,8 +60,9 @@ Admin | Add Tutor
 
 {% if success %}
 <script>
-    alert("Tutor added successfully");
-    window.location.href = "{% url 'admin_view_tutors' %}";
+    setTimeout(function(){
+        window.location.href = "{% url 'admin_view_tutors' %}";},
+        3000);
 </script>
 {% endif %}
 

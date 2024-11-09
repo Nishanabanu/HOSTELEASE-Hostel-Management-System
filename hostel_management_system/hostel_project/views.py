@@ -517,12 +517,32 @@ def warden_change_password(request):
 def warden_verify_student(request):
     warden = get_object_or_404(Warden, LOGIN=request.session['lid'])
     hostel = warden.HOSTEL
+    
+    # Fetching all students related to the hostel's courses
+    students = Student.objects.filter(COURSE__in=hostel.COURSE.all())
+    
+    # Get filter parameters from request
+    search_course = request.GET.get('course', '')
+    search_department = request.GET.get('department', '')
+    
+    # Filter students based on search criteria
+    if search_course:
+        students = students.filter(COURSE__course_name__icontains=search_course)
+    if search_department:
+        students = students.filter(COURSE__DEPARTMENT__name__icontains=search_department)
 
-    students = Student.objects.filter(
-            COURSE__in=hostel.COURSE.all(),  # Courses accepted by the hostel
-            # LOGIN__role='pending'  # Students whose login role is 'pending'
-        )
-    return render(request, 'warden/warden_verify_students.html', {'students': students})
+    # Fetch all courses and departments for the filter dropdowns
+    courses = hostel.COURSE.all()
+    departments = Department.objects.filter(course__in=courses).distinct()
+
+    return render(request, 'warden/warden_verify_students.html', {
+        'students': students,
+        'courses': courses,
+        'departments': departments,
+        'search_course': search_course,
+        'search_department': search_department,
+    })
+
     
 def warden_accept_reject_student(request):
     action = request.POST['action']
@@ -595,7 +615,7 @@ def warden_view_rooms(request):
 
     # Get all available students not assigned to any room
     assigned_students = Student.objects.filter(rooms__isnull=False).distinct()
-    available_students = Student.objects.filter(COURSE__in=hostel.COURSE.all()).exclude(id__in=assigned_students)
+    available_students = Student.objects.filter(COURSE__in=hostel.COURSE.all(),LOGIN__role='student').exclude(id__in=assigned_students)
 
     context = {
         'room_list': room_list,
@@ -605,8 +625,8 @@ def warden_view_rooms(request):
 
 
 def assign_student_to_room(request, student_id, room_id):
-    student = get_object_or_404(Student, id=student_id, LOGIN__role='student')
-    room = get_object_or_404(Room, id=room_id)
+    student = Student.objects.get(id=student_id, LOGIN__role='student')
+    room = Room.objects.get(id=room_id)
 
     # Check if the student is already assigned to a room
     if student.rooms.exists():

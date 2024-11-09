@@ -5,38 +5,81 @@ Admin | Home
 {% endblock title %}
 {% block body %}
 
-<div id="carouselExampleIndicators" class="carousel slide" style="margin-top: 20px; margin-bottom: 20px;">
-  <div class="carousel-indicators">
-    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
-    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
-  </div>
-  <div class="carousel-inner">
-    <div class="carousel-item active">
-      <img src="{% static 'hostel/hostel1.png' %}" class="d-block w-100" alt="...">
+<!-- Page Background -->
+<div class="page-background" style="background-color: rgba(34, 34, 34, 0.9); padding: 50px 0; min-height: 100vh;">
+
+    <!-- Features Section -->
+    <div id="features" class="container mt-5 text-white">
+        <h2 class="text-center mb-4" style="font-weight: bold;">Admin Quick Access</h2>
+        <div class="row">
+            <!-- Card 1: Manage Payments -->
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-lg animate__animated animate__fadeInUp" style="background-color: rgba(0, 0, 0, 0.75);">
+                    <img src="{% static 'kmct/payment.png' %}" class="card-img-top" alt="Manage Payments">
+                    <div class="card-body text-center">
+                        <h5 class="card-title text-white">Manage Payments</h5>
+                        <p class="card-text text-white">Quickly manage all payment details.</p>
+                        <a href="{% url 'admin_view_payments' %}" class="btn btn-custom btn-light">Go to Payments</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Card 2: View Reports -->
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-lg animate__animated animate__fadeInUp" style="background-color: rgba(0, 0, 0, 0.75);">
+                    <img src="{% static 'kmct/students.png' %}" class="card-img-top" alt="View Reports">
+                    <div class="card-body text-center">
+                        <h5 class="card-title text-white">View Students</h5>
+                        <p class="card-text text-white">Access detailed reports and analytics.</p>
+                        <a href="#" class="btn btn-custom btn-light">View Students</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Card 3: Manage Notifications -->
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-lg animate__animated animate__fadeInUp" style="background-color: rgba(0, 0, 0, 0.75);">
+                    <img src="{% static 'kmct/notification.webp' %}" class="card-img-top" alt="Manage Notifications">
+                    <div class="card-body text-center">
+                        <h5 class="card-title text-white">Manage Notifications</h5>
+                        <p class="card-text text-white">Send important alerts to staff and students.</p>
+                        <a href="{% url 'admin_send_notification' %}" class="btn btn-custom btn-light">Go to Notifications</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Card 4: Manage Users -->
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-lg animate__animated animate__fadeInUp" style="background-color: rgba(0, 0, 0, 0.75);">
+                    <img src="{% static 'kmct/departments.png' %}" class="card-img-top" alt="Manage Users">
+                    <div class="card-body text-center">
+                        <h5 class="card-title text-white">Manage Departments</h5>
+                        <p class="card-text text-white">Easily manage the departments.</p>
+                        <a href="{% url 'admin_view_departments' %}" class="btn btn-custom btn-light">Departments</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Card 5: System Settings -->
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-lg animate__animated animate__fadeInUp" style="background-color: rgba(0, 0, 0, 0.75);">
+                    <img src="{% static 'kmct/tutor.png' %}" class="card-img-top" alt="System Settings">
+                    <div class="card-body text-center">
+                        <h5 class="card-title text-white">Manage Tutors</h5>
+                        <p class="card-text text-white">Manage the tutors.</p>
+                        <a href="{% url 'admin_view_tutors' %}" class="btn btn-custom btn-light">Tutors</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Card 6: View Logs -->
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-lg animate__animated animate__fadeInUp" style="background-color: rgba(0, 0, 0, 0.75);">
+                    <img src="{% static 'kmct/complaint.png' %}" class="card-img-top" alt="View Logs">
+                    <div class="card-body text-center">
+                        <h5 class="card-title text-white">View Complaints</h5>
+                        <p class="card-text text-white">Manage the complaints</p>
+                        <a href="{% url 'admin_manage_complaints' %}" class="btn btn-custom btn-light">Complaints</a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="carousel-item">
-      <img src="{% static 'hostel/lh1 1.jpg' %}" class="d-block w-100" alt="...">
-    </div>
-    <div class="carousel-item">
-      <img src="{% static 'hostel/lh1 4.jpg' %}" class="d-block w-100" alt="...">
-    </div>
-  </div>
-  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
-    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Previous</span>
-  </button>
-  <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
-    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Next</span>
-  </button>
 </div>
 
-
-
-
 {% endblock body %}
-
-
-
-

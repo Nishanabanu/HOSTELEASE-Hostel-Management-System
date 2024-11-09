@@ -6,8 +6,32 @@ Warden | Verify Students
 
 <h2 style="text-align: center; margin-bottom: 20px;">Verify Students</h2>
 
-<div style="width: fit-content;">
-    <table class="table table-striped">
+<div style="margin-bottom: 20px;">
+    <form method="GET" action="" class="form-inline">
+        <div class="form-group">
+            <label for="course">Course:</label>
+            <select name="course" id="course" class="form-control ml-2">
+                <option value="">All Courses</option>
+                {% for course in courses %}
+                    <option value="{{ course.course_name }}" {% if search_course == course.course_name %}selected{% endif %}>{{ course.course_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group ml-3">
+            <label for="department">Department:</label>
+            <select name="department" id="department" class="form-control ml-2">
+                <option value="">All Departments</option>
+                {% for department in departments %}
+                    <option value="{{ department.name }}" {% if search_department == department.name %}selected{% endif %}>{{ department.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary ml-3">Search</button>
+    </form>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped table-bordered">
         <thead>
             <tr>
                 <th scope="col">Si. No</th>
@@ -17,6 +41,7 @@ Warden | Verify Students
                 <th scope="col">Image</th>
                 <th scope="col">Admission Number</th>
                 <th scope="col">Course</th>
+                <th scope="col">Department</th>
                 <th scope="col">Status</th>
                 <th scope="col">Accept / Reject</th>
             </tr>
@@ -26,13 +51,15 @@ Warden | Verify Students
             <tr>
                 <th>{{ forloop.counter }}</th>
                 <td>{{ i.name|capfirst }}</td>
-                <td>{{ i.number}}</td>
-                <td>{{ i.address}}</td>
-                <td><img src="{{ i.image.url }}" height="150" width="120"> </td>
-                <td>{{ i.admission_number}}</td>
+                <td>{{ i.number }}</td>
+                <td>{{ i.address }}</td>
+                <td><img src="{{ i.image.url }}" height="150" width="160"></td>
+                <td>{{ i.admission_number }}</td>
                 <td>{{ i.COURSE.course_name }}</td>
-                <td>{{ i.LOGIN.role}}</td>
-                <td>{% if i.LOGIN.role == "pending" %}
+                <td>{{ i.COURSE.DEPARTMENT.name }}</td>
+                <td>{{ i.LOGIN.role }}</td>
+                <td>
+                    {% if i.LOGIN.role == "pending" %}
                     <form method="POST" action='warden_accept_reject_student' style="display: inline;">
                         {% csrf_token %}
                         <input type="hidden" name="login_id" value="{{ i.LOGIN.id }}">
@@ -45,7 +72,6 @@ Warden | Verify Students
                         <input type="hidden" name="action" value="reject">
                         <button type="submit" class="btn btn-danger">Reject</button>
                     </form>
-
                     {% elif i.LOGIN.role == "student" or i.LOGIN.role == "blocked" %}
                     <form method="POST" action='warden_block_unblock_student' style="display: inline;">
                         {% csrf_token %}
@@ -53,8 +79,7 @@ Warden | Verify Students
                         <input type="hidden" name="action" value="block">
                         <button type="submit" class="btn btn-success">Block</button>
                     </form>
-                    &nbsp;
-                    <form method="POST" action='warden_block_unblock_student' style="display: inline;">
+                    <form style="margin-top:2px;" method="POST" action='warden_block_unblock_student' style="display: inline;">
                         {% csrf_token %}
                         <input type="hidden" name="login_id" value="{{ i.LOGIN.id }}">
                         <input type="hidden" name="action" value="unblock">

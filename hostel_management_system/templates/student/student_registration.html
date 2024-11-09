@@ -178,11 +178,13 @@
                 <div class="form-group">
                     <label for="image">Upload Image:</label>
                     <input type="file" class="form-control-file" id="image" name="image" required>
+                    <small id="image_error" class="text-danger" style="display:none;">Only JPG, JPEG, or PNG files are allowed.</small>
+
                 </div>
                 <div class="form-group">
                     <label for="parent_phone_number">Parent Phone Number:</label>
-                    <input type="tel" pattern="[0-9]{10}" class="form-control" id="number" name="parent_phone_number" required>
-                    <small id="number-error" class="text-danger" style="display: none;">Please enter a valid 10-digit number.</small>
+                    <input type="tel" pattern="[0-9]{10}" class="form-control" id="parent_number" name="parent_phone_number" required>
+                    <small id="parent-number-error" class="text-danger" style="display: none;">Please enter a valid 10-digit number.</small>
                 </div>
                 <h4 style="text-align: center;">Course Information</h4>
                 <div class="form-group">
@@ -328,7 +330,35 @@
                 $(this).removeClass('is-invalid');
             }
         });
+    
+        $('#parent_number').keyup(function() {
+            var parentNumber = $(this).val();
+            if (parentNumber.length !== 10 || isNaN(parentNumber)) {
+                $('#parent-number-error').show();
+                $(this).addClass('is-invalid');
+            } else {
+                $('#parent-number-error').hide();
+                $(this).removeClass('is-invalid');
+            }
+        });
+    
+        // Prevent form submission if either phone number is invalid
+        $('#registration-form').submit(function(event) {
+            const studentNumber = $('#number').val();
+            const parentNumber = $('#parent_number').val();
+            
+            if (studentNumber.length !== 10 || isNaN(studentNumber)) {
+                $('#number-error').show();
+                event.preventDefault();  // Prevent form submission
+            }
+    
+            if (parentNumber.length !== 10 || isNaN(parentNumber)) {
+                $('#parent-number-error').show();
+                event.preventDefault();  // Prevent form submission
+            }
+        });
     });
+    
 
     document.getElementById('submit-btn').addEventListener('click', function(event) {
         const dob = document.getElementById('dob').value;
@@ -343,6 +373,34 @@
         }
     });
     </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Image validation for file type
+        $('#image').on('change', function() {
+            var file = $(this).val();
+            var allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;  // Allow jpg, jpeg, png
+
+            if (!allowedExtensions.exec(file)) {
+                $('#image_error').show();  // Show error if invalid
+                $(this).val('');  // Clear the file input
+            } else {
+                $('#image_error').hide();  // Hide error if valid
+            }
+        });
+
+        // Form submission validation (optional redundancy)
+        $('registration-form').on('submit', function(e) {
+            var file = $('#image').val();
+            var allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
+
+            if (!allowedExtensions.exec(file)) {
+                e.preventDefault();  // Prevent form submission if invalid
+                $('#image_error').show();
+            }
+        });
+    });
+</script>
     
 </body>
 </html>
