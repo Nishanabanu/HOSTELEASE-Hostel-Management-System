@@ -34,14 +34,19 @@ path('admin_view_courses',views.admin_view_courses,name='admin_view_courses'),
 path('admin_edit_course/<id>',views.admin_edit_course,name='admin_edit_course'),
 path('admin_view_tutors',views.admin_view_tutors,name='admin_view_tutors'),
 path('admin_add_tutor',views.admin_add_tutor,name='admin_add_tutor'),
+path('admin_retire_warden/<id>',views.admin_retire_warden,name='admin_retire_warden'),
+path('admin_retire_tutor/<id>',views.admin_retire_tutor,name='admin_retire_tutor'),
+
+
+
+
 path('get_courses',views.get_courses,name='get_courses'),
 path('admin_edit_tutor/<id>',views.admin_edit_tutor,name='admin_edit_tutor'),
 path('api/courses',views.get_courses_by_department,name='get_courses_by_department'),
 path('admin_manage_complaints',views.admin_manage_complaints,name='admin_manage_complaints'),
-path('admin_reply_complaint/<id>',views.admin_reply_complaint,name='admin_reply_complaint'),
+path('admin_reply_complaint/<id>/',views.admin_reply_complaint,name='admin_reply_complaint'),
 path('admin_send_payment_request',views.admin_send_payment_request,name='admin_send_payment_request'),
 path('admin_view_payments',views.admin_view_payments,name='admin_view_payments'),
-path('admin_send_payment_request',views.admin_send_payment_request,name='admin_send_payment_request'),
 path('admin_send_notification',views.admin_send_notification,name='admin_send_notification'),
 
 #--------------------------------------------------------------------------------------------------------------------------
@@ -59,30 +64,59 @@ path('remove_student_from_room/<int:student_id>/<int:room_id>/', views.remove_st
 
 path('warden_accept_reject_student',views.warden_accept_reject_student,name='warden_accept_reject_student'),
 path('warden_block_unblock_student',views.warden_block_unblock_student,name='warden_block_unblock_student'),
+path('warden_view_notification',views.warden_view_notification,name='warden_view_notification'),
+path('warden_view_leave',views.warden_view_leave,name='warden_view_leave'),
+path('warden_view_local_movement',views.warden_view_local_movement,name='warden_view_local_movement'),
+path('warden_manage_complaint',views.warden_manage_complaint,name='warden_manage_complaint'),
+path('warden_send_reply',views.warden_send_reply,name='warden_send_reply'),
 
 
+path('warden/students/', views.warden_view_students, name='warden_students'),
+path('warden/student/<int:student_id>/', views.warden_view_student_complete_history, name='warden_student_history'),
 #----------------------------------------------------------------------------------------------------------------------------------
 path('tutor_view_students',views.tutor_view_students,name="tutor_view_students"),
+path('tutor_change_password',views.tutor_change_password,name="tutor_change_password"),
+path('tutor_view_local_movement',views.tutor_view_local_movement,name="tutor_view_local_movement"),
 path('assign_parent/<int:id>',views.assign_parent,name="assign_parent"),
 path('tutor_view_profile',views.tutor_view_profile,name="tutor_view_profile"),
 path('tutor_edit_profile',views.tutor_edit_profile,name="tutor_edit_profile"),
+path('verify_leave_request',views.verify_leave_request,name="verify_leave_request"),
+path('tutor_accept_reject_leave',views.tutor_accept_reject_leave,name="tutor_accept_reject_leave"),
+path('tutor_view_notification',views.tutor_view_notification,name="tutor_view_notification"),
+path('tutor_view_payments',views.tutor_view_payments,name="tutor_view_payments"),
 
 #----------------------------------------------------------------------------------------------------------------------------------
 path('parent_view_profile',views.parent_view_profile,name="parent_view_profile"),
+path('parent_change_password',views.parent_change_password,name="parent_change_password"),
 path('parent_edit_profile',views.parent_edit_profile,name="parent_edit_profile"),
+path('view_student_details',views.view_student_details,name="view_student_details"),
+path('parent_view_local_movement',views.parent_view_local_movement,name="parent_view_local_movement"),
+path('parent_view_leave',views.parent_view_leave,name="parent_view_leave"),
+path('parent_view_notification',views.parent_view_notification,name="parent_view_notification"),
+path('parent_view_payments',views.parent_view_payments,name="parent_view_payments"),
+
 
 #---------------------------------------------------------------------------------------------------------------------------------
 path('student_registration',views.student_registration,name='student_registration'),
 path('student_view_profile',views.student_view_profile,name='student_view_profile'),
+path('student_change_password',views.student_change_password,name='student_change_password'),
 path('student_update_profile',views.student_update_profile,name='student_update_profile'),
 path('student_manage_leave',views.student_manage_leave,name='student_manage_leave'),
+path('student_view_notification',views.student_view_notification,name='student_view_notification'),
 path('add_leave',views.add_leave,name='add_leave'),
 path('manage-local-movement/',views.manage_local_movement, name='manage_local_movement'),
 path('local_movement/',views.manage_local_movement, name='manage_local_movement'),
+path('student_manage_complaint/',views.student_manage_complaint, name='student_manage_complaint'),
+path('student_add_new_complaint/',views.student_add_new_complaint, name='student_add_new_complaint'),
 path('local_movement/update/<int:movement_id>/', views.update_entry_time, name='update_entry_time'),
 path('delete/<id>', views.delete, name='delete'),
 
 
+
+path('student/manage-payments/', views.student_manage_payments, name='student_manage_payments'),
+
+path('pay/proceed/<int:id>/<int:amt>/', views.user_pay_proceed, name='user_pay_proceed'),
+path('on_payment_success', views.on_payment_success, name='on_payment_success'),
 
 
 ]

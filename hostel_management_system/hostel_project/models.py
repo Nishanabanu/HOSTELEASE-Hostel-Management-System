@@ -44,6 +44,9 @@ class Warden(models.Model):
     phone = models.BigIntegerField()
     address = models.CharField(max_length=300)
     image = models.ImageField(upload_to='warden_images/')
+    is_retired = models.BooleanField(default=False)
+    date_of_retirement = models.DateField(null=True, blank=True)
+    reason_for_retirement = models.TextField(null=True, blank=True)
     
     def __str__(self):
         return self.name
@@ -69,7 +72,7 @@ class Student(models.Model):
 class Room(models.Model):
     STUDENTS = models.ManyToManyField(Student, related_name="rooms", blank=True)  # Many-to-many relationship
     HOSTEL = models.ForeignKey(Hostel, on_delete=models.CASCADE)
-    room_number = models.BigIntegerField()
+    room_number = models.BigIntegerField(blank=True, null=True)
     capacity = models.IntegerField()
     image = models.ImageField(upload_to='room_images/')
 
@@ -86,6 +89,10 @@ class Tutor(models.Model):
     year = models.IntegerField()
     phone_number = models.BigIntegerField()
     image = models.ImageField(upload_to='tutor_images/')
+    is_retired = models.BooleanField(default=False)
+    date_of_retirement = models.DateField(null=True, blank=True)
+    reason_for_retirement = models.TextField(null=True, blank=True)
+
     
     def __str__(self):
         return self.name
@@ -128,13 +135,23 @@ class LeavingRegister(models.Model):
     def __str__(self):
         return f'{self.STUDENT.name} - {self.start_date} to {self.end_date}'
 
+class Notification(models.Model):
+    notification = models.CharField(max_length=400)
+    notification_date = models.DateField(auto_now_add=True)
+    user_type = models.CharField(max_length=20)
+    
+    def __str__(self):
+        return self.notification
+
 class Payment(models.Model):
+    NOTIFICATION = models.ForeignKey(Notification,on_delete=models.CASCADE)
     STUDENT = models.ForeignKey(Student, on_delete=models.CASCADE)
     amount = models.BigIntegerField()
     date = models.DateField(auto_now_add=True)
     status = models.CharField(max_length=30, default='Pending')
     screenshot = models.ImageField(upload_to='payment_screenshots/')
     is_requested = models.BooleanField(default=False)
+    transaction_id = models.CharField(max_length=100, null=True, blank=True)  # Optional for transaction tracking
     
     def __str__(self):
         return f'{self.STUDENT.name} - {self.amount}'
@@ -145,16 +162,10 @@ class Complaint(models.Model):
     reply = models.CharField(max_length=500)
     date = models.DateField(auto_now_add=True)
     image = models.ImageField(upload_to='complaints/')
-    replied_status = models.BooleanField(default=False)
+    user_type = models.CharField(max_length=20)
     
     def __str__(self):
         return f'{self.STUDENT.name} - {self.date}'
     
-class Notification(models.Model):
-    notification = models.CharField(max_length=400)
-    notification_date = models.DateField(auto_now_add=True)
-    user_type = models.CharField(max_length=20)
-    
-    def __str__(self):
-        return self.notification
+
     

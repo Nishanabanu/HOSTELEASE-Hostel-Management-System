@@ -162,12 +162,12 @@ h2 {
           cursor: pointer;
           background-color: #4f7591;
           color: rgb(224, 126, 126);">Close the side bar</a>
-        <a href="#">View Students</a>
+        <a href="{% url 'admin_view_students' %}">View Students</a>
         <a href="{% url 'admin_view_payments' %}">Manage Payments</a>
         <a href="{% url 'admin_send_notification' %}">Send Notification</a>
         <a href="{% url 'admin_view_departments' %}">Manage Department</a>
         <a href="{% url 'admin_view_courses' %}">Manage Course</a>
-        <a href="{% url 'admin_view_alumini' %}">View Alumini Students</a>
+        {% comment %} <a href="#">View Alumini Students</a> {% endcomment %}
     </div>
 
     <div id="main">

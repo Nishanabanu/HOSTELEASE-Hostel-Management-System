@@ -11,10 +11,10 @@ Warden | Add Room
         <div class="col-md-6">
             <form method="POST" action="" enctype="multipart/form-data">
                 {% csrf_token %}
-                <div class="form-group mb-3">
+                {% comment %} <div class="form-group mb-3">
                     <label for="room_number">Room Number</label>
                     <input type="text" class="form-control" id="room_number" name="room_number" placeholder="Enter room number" required>
-                </div>
+                </div> {% endcomment %}
                 <div class="form-group mb-3">
                     <label for="capacity">Capacity</label>
                     <input type="number" class="form-control" id="capacity" name="capacity" placeholder="Enter room capacity" required>

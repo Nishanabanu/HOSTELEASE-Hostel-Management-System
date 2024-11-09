@@ -1,0 +1,25 @@
+{% extends "parent/base.html" %}
+{% load static %}
+{% block title %}
+Parent | View Notification
+{% endblock title %}
+{% block name %}
+{{ parent.name }}
+{% endblock name %}
+{% block body %}
+
+<div class="container mt-5">
+    <h2 class="mb-4">Notifications</h2>
+    <div class="list-group">
+        {% for notify in notification %}
+            <a href="#" class="list-group-item list-group-item-action">
+                <small>{{ notify.notification_date }}</small><br><br>
+                <h5 class="mb-1">{{ notify.notification }}</h5>
+            </a>
+        {% empty %}
+            <p class="text-center">No notifications available.</p>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock body %}

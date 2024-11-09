@@ -1,0 +1,80 @@
+{% extends "tutor/base.html" %}
+{% load static %}
+{% block title %}
+Tutor | Verify Leaves
+{% endblock title %}
+{% block name %}{{tutor_name}}{% endblock name %}
+{% block body %}
+
+<div class="table-responsive">
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th scope="col">Si. No</th>
+                <th scope="col">Name</th>
+                <th scope="col">Number</th>
+                <th scope="col">Address</th>
+                <th scope="col">Admission Number</th>
+                <th scope="col">Date</th>
+                <th scope="col">Reason</th>
+                <th scope="col">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for i in leaves %}
+            <tr>
+                <th>{{ forloop.counter }}</th>
+                <td>
+                    {{ i.STUDENT.name|capfirst }}
+                    <br>
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#imageModal{{ i.id }}">
+                        <img src="{{ i.STUDENT.image.url }}" height="50" width="100" class="img-thumbnail">
+                    </a>
+                </td>
+                <td>{{ i.STUDENT.number }}</td>
+                <td>{{ i.STUDENT.address }}</td>
+                <td>{{ i.STUDENT.admission_number }}</td>
+                <td>Start : {{ i.start_date }} <br>End : {{ i.end_date }}</td>
+                <td>{{ i.reason }}</td>
+                <td>
+                    {% if i.status == 'approved' or i.status == 'rejected' %}
+                        {{ i.status|capfirst }}
+                    {% else %}
+                        {% if i.status == "pending" %}
+                        <form method="POST" action="{% url 'tutor_accept_reject_leave' %}" style="display: inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="leave_request" value="{{ i.id }}">
+                            <input type="hidden" name="action" value="accept">
+                            <button type="submit" class="btn btn-success">Accept</button>
+                        </form>
+                        <form method="POST" action="{% url 'tutor_accept_reject_leave' %}" style="display: inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="leave_request" value="{{ i.id }}">
+                            <input type="hidden" name="action" value="reject">
+                            <button type="submit" class="btn btn-danger">Reject</button>
+                        </form>
+                        {% endif %}
+                    {% endif %}
+                </td>
+            </tr>
+
+            <!-- Image Modal for each student leave request -->
+            <div class="modal fade" id="imageModal{{ i.id }}" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">{{ i.STUDENT.name|capfirst }}'s Image</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body text-center">
+                            <img src="{{ i.STUDENT.image.url }}" class="img-fluid" alt="Student Image">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock body %}

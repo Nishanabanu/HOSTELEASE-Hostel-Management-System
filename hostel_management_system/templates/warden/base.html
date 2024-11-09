@@ -267,9 +267,10 @@
     <div id="sidebar"><br><h2 style="font-family: cursive;margin-left:30px; color:white; font-size:medium;"><u>Hello, {{ request.session.warden_name }}</h2><hr></u>
         <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">Close the sidebar</a>
         <a href="{% url 'warden_view_profile' %}">View Profile</a>
-        <a href="#">View Leave</a>
-        <a href="#">View Local Movement</a>
+        <a href="{% url 'warden_view_leave' %}">View Leave</a>
+        <a href="{% url 'warden_view_local_movement' %}">View Local Movement</a>
         <a href="{% url 'warden_change_password' %}">Change Password</a>
+        <a href="{% url 'warden_students' %}">Track Student</a>
 
     </div>
 
@@ -288,8 +289,8 @@
                         <a class="nav-item nav-link" href="{% url 'warden_home' %}">Home</a>
                         <a class="nav-item nav-link" href="{% url 'warden_verify_student' %}">Verify Students</a>
                         <a class="nav-item nav-link" href="{% url 'warden_view_rooms' %}">Manage Rooms</a>
-                        <a class="nav-item nav-link" href="#">Manage Notifications</a>
-                        <a class="nav-item nav-link" href="#">Manage Complaints</a>
+                        <a class="nav-item nav-link" href="{% url 'warden_view_notification' %}">Manage Notifications</a>
+                        <a class="nav-item nav-link" href="{% url 'warden_manage_complaint' %}">Manage Complaints</a>
                         <a href="{% url 'logout' %}" class="ml-auto">
                             <i class="fas fa-sign-out-alt" style="font-size:30px;color:red; margin-top:6px;"></i>
                         </a> 

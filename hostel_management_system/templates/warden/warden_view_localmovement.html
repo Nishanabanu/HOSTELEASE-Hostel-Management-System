@@ -1,0 +1,37 @@
+{% extends "warden/base.html" %}
+{% load static %}
+
+{% block title %}
+Warden | View Local Movement
+{% endblock title %}
+
+{% block body %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">Local Movements of Students</h2>
+    <div class="row">
+        {% for movement in local_movements %}
+            <div class="col-md-4 mb-3">
+                <div class="card border-primary">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">{{ movement.STUDENT.name|capfirst }}</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="small"><strong>Date:</strong> {{ movement.date }}</p>
+                        <p class="small"><strong>Exit Time:</strong> {{ movement.exit_time }}</p>
+                        {% if movement.entry_time %}
+                            <p class="small"><strong>Entry Time:</strong> {{ movement.entry_time }}</p>
+                        {% else %}
+                            <p class="small"><strong>Entry Time:</strong> Not yet entered</p>
+                        {% endif %}
+                        <p class="small"><strong>Reason:</strong> {{ movement.reason }}</p>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <p class="text-center">No local movements recorded.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

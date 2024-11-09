@@ -29,7 +29,7 @@ Tutor | Home
                 <div class="card-body text-center">
                     <h5 class="card-title">Manage Leaves</h5>
                     <p class="card-text">View leave request send by Students. And verify if it is necessary</p>
-                    <a href="#" class="btn btn-custom">Leaves</a>
+                    <a href="{% url 'verify_leave_request' %}" class="btn btn-custom">Leaves</a>
                 </div>
             </div>
         </div>
@@ -40,7 +40,7 @@ Tutor | Home
                 <div class="card-body text-center">
                     <h5 class="card-title">Manage Notifications</h5>
                     <p class="card-text">Don't miss the important updates and alerts <br> For you</p>
-                    <a href="#" class="btn btn-custom">Notifications</a>
+                    <a href="{% url 'tutor_view_notification' %}" class="btn btn-custom">Notifications</a>
                 </div>
             </div>
         </div>

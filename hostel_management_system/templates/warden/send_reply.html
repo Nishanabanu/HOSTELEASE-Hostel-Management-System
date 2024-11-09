@@ -1,0 +1,122 @@
+{% extends "warden/base.html" %}
+{% load static %}
+
+{% block title %}
+Warden | Manage Complaints
+{% endblock title %}
+
+{% block body %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">Manage Student Complaints</h2>
+            
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Student Name</th>
+                            <th>Room Number</th>
+                            <th>Complaint</th>
+                            <th>Image</th>
+                            <th>Reply</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for complaint in complaints %}
+                        <tr>
+                            <td>{{ complaint.date|date:'Y-m-d' }}</td>
+                            <td>{{ complaint.STUDENT.name }}</td>
+                            <td>
+                                {% for room in complaint.STUDENT.rooms.all %}
+                                    {{ room.room_number }}
+                                {% endfor %}
+                            </td>
+                            <td>{{ complaint.complaint }}</td>
+                            <td>
+                                {% if complaint.image %}
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#imageModal{{ complaint.id }}">
+                                    <img src="{{ complaint.image.url }}" alt="Complaint Image" class="img-thumbnail" style="max-width: 100px;">
+                                </a>
+                                {% else %}
+                                No Image
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if complaint.reply == 'pending' %}
+                                <span class="badge bg-warning">Pending</span>
+                                {% else %}
+                                {{ complaint.reply }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if complaint.reply == 'pending' %}
+                                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" 
+                                        data-bs-target="#replyModal{{ complaint.id }}">
+                                    Reply
+                                </button>
+                                {% else %}
+                                <span class="badge bg-success">Replied</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+
+                        <!-- Reply Modal for each complaint -->
+                        <div class="modal fade" id="replyModal{{ complaint.id }}" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Send Reply</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <form method="POST" action="{% url 'warden_send_reply' %}">
+                                        {% csrf_token %}
+                                        <div class="modal-body">
+                                            <input type="hidden" name="complaint_id" value="{{ complaint.id }}">
+                                            <div class="mb-3">
+                                                <label class="form-label">Student's Complaint:</label>
+                                                <p class="form-control-static">{{ complaint.complaint }}</p>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="reply" class="form-label">Your Reply:</label>
+                                                <textarea class="form-control" name="reply" rows="4" required></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-primary">Send Reply</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Image Modal for each complaint -->
+                        <div class="modal fade" id="imageModal{{ complaint.id }}" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Complaint Image</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body text-center">
+                                        <img src="{{ complaint.image.url }}" alt="Complaint Image" class="img-fluid">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center">No complaints found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

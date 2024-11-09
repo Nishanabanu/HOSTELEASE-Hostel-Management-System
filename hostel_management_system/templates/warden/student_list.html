@@ -1,0 +1,43 @@
+{% extends "warden/base.html" %}
+{% block title %}
+Warden | Student List
+{% endblock title %}
+{% block name %}
+Student List
+{% endblock name %}
+{% block body %}
+<div class="container mt-4">
+    <h2 class="text-center">List of Students</h2>
+
+    {% if error %}
+        <div class="alert alert-danger text-center" role="alert">
+            {{ error }}
+        </div>
+    {% else %}
+        <table class="table table-bordered">
+            <thead class="thead-light">
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Admission Number</th>
+                    <th>Course</th>
+                    <th>View More</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ student.name }}</td>
+                        <td>{{ student.admission_number }}</td>
+                        <td>{{ student.COURSE.course_name }}</td>
+                        <td>
+                            <a href="{% url 'warden_student_history' student.id %}" class="btn btn-info">View More</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</div>
+{% endblock body %}

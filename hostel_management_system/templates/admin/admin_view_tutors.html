@@ -9,6 +9,8 @@ Admin | View Tutors
 <a href="{% url 'admin_add_tutor' %}" class="btn btn-success" style="margin-left: 10px;">Add New Tutor</a>
 
 <div class="container" style="margin-top: 10px;">
+    <!-- Active Tutors Section -->
+    <h2>Active Tutors</h2>
     <div class="row">
         {% for tutor in tutors %}
             <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4 d-flex align-items-stretch">
@@ -28,12 +30,73 @@ Admin | View Tutors
                         </ul>
                         <div class="mt-auto text-center">
                             <a href="{% url 'admin_edit_tutor' tutor.id %}" class="btn btn-primary">Edit</a>
+                            <button class="btn btn-danger" data-toggle="modal" data-target="#retireModal{{ tutor.id }}">Retire Tutor</button>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal for Retiring Tutor -->
+            <div class="modal fade" id="retireModal{{ tutor.id }}" tabindex="-1" role="dialog" aria-labelledby="retireModalLabel{{ tutor.id }}" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="retireModalLabel{{ tutor.id }}">Retire Tutor: {{ tutor.name }}</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <form method="POST" action="{% url 'admin_retire_tutor' tutor.id %}">
+                            {% csrf_token %}
+                            <div class="modal-body">
+                                <p>Are you sure you want to retire <b>{{ tutor.name }}</b>?</p>
+                                <div class="form-group">
+                                    <label for="retireReason{{ tutor.id }}">Reason for retirement:</label>
+                                    <textarea class="form-control" id="retireReason{{ tutor.id }}" name="retirement_reason" rows="3" required></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-danger">Confirm Retirement</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
         {% empty %}
             <p>No Tutors found.</p>
+        {% endfor %}
+    </div>
+
+    <!-- Retired Tutors Section -->
+    <h2>Retired Tutors</h2>
+    <div class="row">
+        {% for retired_tutor in retired_tutors %}
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4 d-flex align-items-stretch">
+                <div class="card" style="width: 100%;">
+                    {% if retired_tutor.image %}
+                        <img class="card-img-top" src="{{ retired_tutor.image.url }}" style="height: 200px; width: 100%; object-fit: cover;">
+                    {% else %}
+                        <img class="card-img-top" src="{% static 'image.png' %}" style="height: 200px; width: 100%; object-fit: cover;">
+                    {% endif %}
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">NAME: {{ retired_tutor.name }}</h5>
+                        <p class="card-text">PHONE: {{ retired_tutor.phone_number }}</p>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">DEPARTMENT: {{ retired_tutor.COURSE.DEPARTMENT.name }}</li>
+                            <li class="list-group-item">COURSE: {{ retired_tutor.COURSE.course_name }}</li>
+                            <li class="list-group-item">YEAR: {{ retired_tutor.year }}</li>
+                            <li class="list-group-item">RETIREMENT DATE: <b>{{ retired_tutor.date_of_retirement }}</b></li>
+                            <li class="list-group-item">REASON FOR RETIREMENT: <b>{{ retired_tutor.reason_for_retirement }}</b></li>
+                        </ul>
+                        <div class="mt-auto text-center">
+                            <p class="text-muted">Retired</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <p>No Retired Tutors found.</p>
         {% endfor %}
     </div>
 </div>

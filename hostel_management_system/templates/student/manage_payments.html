@@ -1,0 +1,47 @@
+{% extends "student/base.html" %}
+{% load static %}
+{% block title %}
+Student | Manage Payments
+{% endblock title %}
+{% block name %}
+{{ student.name }}
+{% endblock name %}
+{% block body %}
+    <div class="container mt-5">
+        <h2>Manage Payments</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Si.No</th>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for payment in payments %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ payment.date }}</td>
+                    <td>{{ payment.amount }}</td>
+                    <td>{{ payment.status }}</td>
+                    <td>
+                        {% if payment.status == 'Pending' %}
+                        <form method="POST" action="{% url 'user_pay_proceed' payment.id  payment.amount %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary">Pay</button>
+                        </form>{% else %}
+                        Paid
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4">No payment records found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

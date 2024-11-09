@@ -1,0 +1,117 @@
+{% extends "student/base.html" %}
+{% load static %}
+
+{% block title %}
+Student | Manage Complaints
+{% endblock title %}
+
+{% block name %}
+{{ student.name }}
+{% endblock name %}
+
+{% block body %}
+<!-- Add New Complaint Button -->
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Manage Complaints</h2>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addComplaintModal">
+            <i class="fas fa-plus"></i> Add New Complaint
+        </button>
+    </div>
+
+    <!-- Complaints Table -->
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Si.No</th>
+                    <th>Date</th>
+                    <th>Complaint</th>
+                    <th>Image</th>
+                    <th>Reply</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for complaint in complaints %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ complaint.date }}</td>
+                    <td>{{ complaint.complaint }}</td>
+                    <td>
+                        {% if complaint.image %}
+                       <a href="{{ complaint.image.url }}"><img src="{{ complaint.image.url }}" alt="Complaint Image" class="img-thumbnail" style="max-width: 100px;"></a> 
+                        {% else %}
+                        No Image
+                        {% endif %}
+                    </td>
+                    <td>{{ complaint.reply }}</td>
+                    <td>
+                        {% if complaint.reply == 'pending' %}
+                        <span class="badge bg-warning">Pending</span>
+                        {% else %}
+                        <span class="badge bg-success">Replied</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">No complaints found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Add Complaint Modal -->
+<div class="modal fade" id="addComplaintModal" tabindex="-1" aria-labelledby="addComplaintModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addComplaintModalLabel">Add New Complaint</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{% url 'student_add_new_complaint' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="complaint" class="form-label">Complaint Description</label>
+                        <textarea class="form-control" id="complaint" name="complaint" rows="4" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="complaint" class="form-label">Receiver</label>
+                        <select name="user_type">
+                            <option value="admin">Admin</option>
+                            <option value="warden">Warden</option>
+                            </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="image" class="form-label">Upload Image</label>
+                        <input type="file" class="form-control" id="image" name="image" accept="image/*" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Submit Complaint</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Preview Image Script -->
+<script>
+    document.getElementById('image').onchange = function() {
+        var input = this;
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                // You could add an img element to show preview if desired
+                console.log('Image selected');
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    };
+</script>
+{% endblock body %}

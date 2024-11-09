@@ -1,0 +1,87 @@
+{% extends "parent/base.html" %}
+{% load static %}
+{% block title %}
+Parent | View Student
+{% endblock title %}
+{% block name %}
+{{ parent.name }}
+{% endblock name %}
+{% block body %}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <!-- Profile Image and Basic Info -->
+        <div class="col-md-4">
+            <div class="card shadow bg-light border-info">
+                <img src="{{ student.image.url }}" class="card-img-top img-fluid rounded" alt="{{ student.name }}">
+                <div class="card-body text-center bg-info text-white">
+                    <h3 class="card-title">{{ student.name }}</h3>
+                    <p class="card-text"><strong>Admission No: </strong>{{ student.admission_number }}</p>
+                    <p class="card-text"><strong>Phone: </strong>{{ student.number }}</p>
+                    <p class="card-text"><strong>Year: </strong>{{ student.year }}</p>
+                    <p class="card-text"><strong>Date of Birth: </strong>{{ student.dob }}</p>
+                    <p class="card-text"><strong>Address: </strong>{{ student.address }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Course, Hostel, Room, Tutor, and Warden Details -->
+        <div class="col-md-8">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white text-center">
+                    <h3>Student Information</h3>
+                </div>
+                <div class="card-body bg-light">
+                    <!-- Course Details -->
+                    <div class="mb-4">
+                        <h4 class="text-primary">Course Details</h4>
+                        <p><strong>Course Name:</strong> {{ course.course_name }}</p>
+                        <p><strong>Department:</strong> {{ department.name }}</p>
+                    </div>
+
+                    <!-- Hostel and Room Details -->
+                    <div class="mb-4">
+                        <h4 class="text-primary">Hostel & Room Details</h4>
+                        {% if hostel %}
+                            <p><strong>Hostel Name:</strong> {{ hostel.name }}</p>
+                            <p><strong>Hostel Number:</strong> {{ hostel.number }}</p>
+                            <!-- <p><strong>Hostel Details:</strong> {{ hostel.details }}</p> -->
+                        {% else %}
+                            <p class="text-danger">No hostel assigned.</p>
+                        {% endif %}
+
+                        {% if room %}
+                            <p><strong>Room Number:</strong> {{ room.id }}</p>
+                        {% else %}
+                            <p class="text-danger">No room assigned.</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Tutor Details -->
+                    <div class="mb-4">
+                        <h4 class="text-primary">Tutor Details</h4>
+                        {% if tutor %}
+                            <p><strong>Tutor Name:</strong> {{ tutor.name }}</p>
+                            <p><strong>Tutor Phone Number:</strong> {{ tutor.phone_number }}</p>
+                        {% else %}
+                            <p class="text-danger">No tutor assigned.</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Warden Details -->
+                    <div>
+                        <h4 class="text-primary">Warden Details</h4>
+                        {% if warden %}
+                            <p><strong>Warden Name:</strong> {{ warden.name }}</p>
+                            <p><strong>Warden Phone Number:</strong> {{ warden.phone }}</p>
+                        {% else %}
+                            <p class="text-danger">No warden assigned.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock body %}

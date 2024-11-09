@@ -266,10 +266,10 @@
 <body>
     <div id="sidebar"><br><h2 style="font-family: cursive;margin-left:30px; color:white; font-size:medium;"><u>Hello, {{ request.session.tutor_name }}</h2><hr></u>
         <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">Close the sidebar</a>
-        <a href="{% url "tutor_view_profile" %}">View Profile</a>
-        <a href="#">View Notification</a>
-        <a href="#">View Local Movement</a>
-        <a href="#">Change Password</a>
+        <a href="{% url 'tutor_view_profile' %}">View Profile</a>
+        <a href="{% url 'tutor_view_notification' %}">View Notification</a>
+        <a href="{% url 'tutor_view_local_movement' %}">View Local Movement</a>
+        <a href="{% url 'tutor_change_password' %}">Change Password</a>
 
     </div>
 
@@ -286,9 +286,9 @@
                 <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                     <div class="navbar-nav ml-auto">
                         <a class="nav-item nav-link" href="{% url 'tutor_home' %}">Home</a>
-                        <a class="nav-item nav-link" href="{% url  'tutor_view_students' %}">View Students</a>
-                        <a class="nav-item nav-link" href="#">Leave Request</a>
-                        <a class="nav-item nav-link" href="#">View Payments</a>
+                        <a class="nav-item nav-link" href="{% url 'tutor_view_students' %}">View Students</a>
+                        <a class="nav-item nav-link" href="{% url 'verify_leave_request' %}">Leave Request</a>
+                        <a class="nav-item nav-link" href="{% url 'tutor_view_payments' %}">View Payments</a>
                         <a href="{% url 'logout' %}" class="ml-auto">
                             <i class="fas fa-sign-out-alt" style="font-size:30px;color:red; margin-top:6px;"></i>
                         </a> 

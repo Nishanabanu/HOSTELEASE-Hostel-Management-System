@@ -27,7 +27,11 @@ Tutor | View Students
         <td>{{ student.rooms.first.HOSTEL.name }}</td>
         <td>{{ student.rooms.first.room_number }}</td>
         <td>{{ student.number }}</td>
-        <td><img src="{{ student.image.url }}" width="100" height="100"></td>
+        <td>
+          <a href="#" data-bs-toggle="modal" data-bs-target="#imageModal{{ student.id }}">
+            <img src="{{ student.image.url }}" width="50" height="100" class="img-thumbnail">
+          </a>
+        </td>
         <td>
           {% if student.parent_set.exists %}
             {{ student.parent_set.first.name }}
@@ -43,6 +47,21 @@ Tutor | View Students
           {% endif %}
         </td>
       </tr>
+
+      <!-- Image Modal for each student -->
+      <div class="modal fade" id="imageModal{{ student.id }}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Student Image</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+              <img src="{{ student.image.url }}" class="img-fluid" alt="Student Image">
+            </div>
+          </div>
+        </div>
+      </div>
       {% endfor %}
     </tbody>
 </table>

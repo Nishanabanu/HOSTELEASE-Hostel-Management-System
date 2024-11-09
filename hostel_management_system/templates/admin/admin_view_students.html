@@ -1,35 +1,104 @@
 {% extends "admin/base.html" %}
 {% load static %}
 {% block title %}
-Admin | View students
+Admin | View Students
 {% endblock title %}
-{% block body %}
 
-<div class="card mb-3" style="max-width: 540px; margin: auto;">
-    <div class="row g-0">
-        <div class="col-md-4">
-            {% for i in alumini_details %}
-            <img src="{{ i.image.url }}" class="img-fluid rounded-start" alt="Student Image" style="height: 100%; object-fit: cover;">
-        </div>
-        <div class="col-md-8">
-            <div class="card-body">
-                <h5 class="card-title">{{ i.STUDENT.name }}</h5>
-                <p class="card-text"><strong>Admission Number:</strong> {{ i.STUDENT.admission_number }}</p>
-                <p class="card-text"><strong>Unique Number:</strong> {{ i.STUDENT.unique_number }}</p>
-                <p class="card-text"><strong>Course:</strong> {{ i.STUDENT.COURSE.course_name }}</p>
-                <p class="card-text"><strong>Year:</strong> {{ i.STUDENT.year }}</p>
-                <p class="card-text"><strong>Date of Birth:</strong> {{ i.STUDENT.dob }}</p>
-                <p class="card-text"><strong>Age:</strong> {{ i.STUDENT.age }}</p>
-                <p class="card-text"><strong>Address:</strong> {{ i.STUDENT.address }}</p>
-                <p class="card-text"><strong>Phone Number:</strong> <a href="tel:{{ i.STUDENT.number }}">{{ i.STUDENT.number }}</a></p>
-                <p class="card-text"><strong>Parent's Phone Number:</strong> <a href="tel:{{ i.parent_phone_number }}">{{ i.STUDENT.parent_phone_number }}</a></p>
-                <p class="card-text"><small class="text-muted"><strong>Date of Joining:</strong> {{ i.STUDENT.date_of_joining }}</small></p>
+{% block body %}
+<div class="container mt-5">
+    <h2>Student Details</h2>
+
+    <!-- Search bar -->
+    <input type="text" id="search-input" placeholder="Search students..." class="form-control mb-4">
+
+    <!-- Students list with pagination and search filter -->
+    <div id="students-list">
+        {% for data in page_obj %}
+            <div class="student-card">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h2 style="color: blue; text-align:center" class="card-title">Student name : {{ data.student.name|capfirst }}</h2><br><br>
+                        <div class="row">
+                            <!-- Left Column -->
+                            <div class="col-md-6">
+                                <p><strong>Admission Number:</strong> {{ data.student.admission_number }}</p>
+                                <p><strong>Phone Number:</strong> {{ data.student.number }}</p>
+                                <p><strong>Date of Birth:</strong> {{ data.student.dob }}</p>
+                                <p><strong>Year:</strong> {{ data.student.year }}</p>
+                                <p><strong>Address:</strong> {{ data.student.address }}</p><hr>
+
+                                <h4 style="color: brown;">Course & Department</h6>
+                                <p><strong>Course:</strong> {{ data.course.course_name }}</p>
+                                <p><strong>Department:</strong> {{ data.course.DEPARTMENT.name }}</p><hr>
+                            </div>
+
+                            <!-- Right Column -->
+                            <div class="col-md-6">
+                                <h4 style="color: red;">Hostel & Room</h4>
+                                <p><strong>Hostel:</strong> {% if data.hostel %}{{ data.hostel.name }}{% else %}nil{% endif %}</p>
+                                <p><strong>Room Number:</strong> {% if data.room %}{{ data.room.id }}{% else %}nil{% endif %}</p><hr>
+
+                                <h4 style="color: purple;">Warden Details</h4>
+                                <p><strong>Warden Name:</strong> {% if data.warden %}{{ data.warden.name }}{% else %}nil{% endif %}</p>
+                                <p><strong>Warden Phone:</strong> {% if data.warden %}{{ data.warden.phone }}{% else %}nil{% endif %}</p><hr>
+
+                                <h4 style="color: crimson;">Tutor Details</h4>
+                                <p><strong>Tutor:</strong> {% if data.tutor %}{{ data.tutor.name }}{% else %}nil{% endif %}</p>
+                                <p><strong>Tutor Phone:</strong> {% if data.tutor %}{{ data.tutor.phone_number }}{% else %}nil{% endif %}</p><hr>
+
+                                <h4 style="color: blueviolet;">Parent Details</h4>
+                                <p><strong>Parent Name:</strong> {% if data.parent %}{{ data.parent.name }}{% else %}nil{% endif %}</p>
+                                <p><strong>Parent Phone:</strong> {% if data.parent %}{{ data.parent.phone_number }}{% else %}nil{% endif %}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
         {% endfor %}
     </div>
+
+    <!-- Pagination controls -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1">First</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                </li>
+            {% endif %}
+
+            <li class="page-item disabled">
+                <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+            </li>
+
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
 </div>
 
+<!-- JavaScript for real-time search -->
+<script>
+    document.getElementById("search-input").addEventListener("keyup", function() {
+        let filter = this.value.toUpperCase();
+        let studentCards = document.querySelectorAll(".student-card");
 
-
+        studentCards.forEach(function(card) {
+            let text = card.innerText || card.textContent;
+            if (text.toUpperCase().indexOf(filter) > -1) {
+                card.style.display = "";
+            } else {
+                card.style.display = "none";
+            }
+        });
+    });
+</script>
 {% endblock body %}

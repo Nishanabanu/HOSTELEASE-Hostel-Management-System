@@ -267,9 +267,9 @@
     <div id="sidebar"><br><h2 style="font-family: cursive;margin-left:30px; color:white; font-size:medium;"><u>Hello, {{ request.session.parent_name }}</h2><hr></u>
         <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">Close the sidebar</a>
         <a href="{% url 'parent_view_profile' %}">View Profile</a>
-        <a href="#">View Payments</a>
-        <a href="#">View Notification</a>
-        <a href="#">Change Password</a>
+        <a href="{% url 'parent_view_payments' %}">View Payments</a>
+        <a href="{% url 'parent_view_notification' %}">View Notification</a>
+        <a href="{% url 'parent_change_password' %}">Change Password</a>
 
     </div>
 
@@ -285,10 +285,10 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                     <div class="navbar-nav ml-auto">
-                        <a class="nav-item nav-link" href="#">Home</a>
-                        <a class="nav-item nav-link" href="#">View Student</a>
-                        <a class="nav-item nav-link" href="#">View Leave</a>
-                        <a class="nav-item nav-link" href="#">View Local Movement</a>
+                        <a class="nav-item nav-link" href="{% url 'parent_home' %}">Home</a>
+                        <a class="nav-item nav-link" href="{% url "view_student_details" %}">View Student</a>
+                        <a class="nav-item nav-link" href="{% url 'parent_view_leave' %}">View Leave</a>
+                        <a class="nav-item nav-link" href="{% url 'parent_view_local_movement' %}">View Local Movement</a>
                         <a href="{% url 'logout' %}" class="ml-auto">
                             <i class="fas fa-sign-out-alt" style="font-size:30px;color:red; margin-top:6px;"></i>
                         </a> 

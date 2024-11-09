@@ -5,7 +5,7 @@ Admin | Reply Complaint
 {% endblock title %}
 {% block body %}
 
-<form method="POST" action="{% url 'reply_complaint' complaint_object.id %}" style="max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+<form method="POST" action="{% url 'admin_reply_complaint' complaint_object.id %}" style="max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
     {% csrf_token %}
     <h2 style="text-align: center; margin-bottom: 20px;">Reply to Complaint</h2>
     

@@ -1,0 +1,44 @@
+{% extends "parent/base.html" %}
+{% load static %}
+{% block title %}
+Parent | View Payments
+{% endblock title %}
+{% block name %}{{ parent_name }}{% endblock name %}
+{% block body %}
+<div class="container mt-4">
+    <h2 class="text-center">{{ parent_name }}'s Child Payment History</h2>
+
+    {% if error %}
+        <div class="alert alert-danger text-center" role="alert">
+            {{ error }}
+        </div>
+    {% elif payments %}
+        <div class="row">
+            {% for payment in payments %}
+                <div class="col-md-4">
+                    <div class="card mb-4 shadow-sm payment-card">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="card-title">{{ payment.STUDENT.name }}</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">
+                                <strong>Amount:</strong> ₹{{ payment.amount }}<br>
+                                <strong>Status:</strong> {{ payment.status }}<br>
+                                <strong>Date:</strong> {{ payment.date }}<br>
+                                {% if payment.screenshot %}
+                                    <strong>Screenshot:</strong><br>
+                                    <img src="{{ payment.screenshot.url }}" alt="Payment Screenshot" class="img-fluid">
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center" role="alert">
+            No payment records found for your child.
+        </div>
+    {% endif %}
+</div>
+{% endblock body %}

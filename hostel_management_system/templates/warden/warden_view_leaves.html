@@ -1,0 +1,23 @@
+{% extends "warden/base.html" %}
+{% load static %}
+{% block title %}
+Warden | View Leaves
+{% endblock title %}
+
+{% block body %}
+<div class="container mt-5">
+    <h2 class="mb-4">Approved Leave Requests</h2>
+    <div class="list-group">
+        {% for leave in approved_leaves %}
+            <a href="#" class="list-group-item list-group-item-action">
+                <h5 class="mb-1">{{ leave.STUDENT.name|capfirst }}</h5>
+                <small>From: {{ leave.start_date }} To: {{ leave.end_date }}</small><br>
+                <small>Reason: {{ leave.reason }}</small><br>
+                <small>Status: {{ leave.status }}</small>
+            </a>
+        {% empty %}
+            <p class="text-center">No approved leaves available.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

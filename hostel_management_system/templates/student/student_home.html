@@ -1,7 +1,7 @@
 {% extends "student/base.html" %}
 {% load static %}
 {% block title %}
-Tutor | Home
+Student | Home
 {% endblock title %}
 {% block name %}{{student_name}}{% endblock name %}
 
@@ -9,7 +9,7 @@ Tutor | Home
 <div class="container mt-5">
     <div class="row">
         <div class="col-md-12 text-center">
-            <h1 class="display-4 mb-4">Welcome, {{ request.session.student_name }}!</h1>
+            <h1 class="display-4 mb-4">Welcome, {{ request.session.student_name|capfirst }}...</h1>
             <p class="lead">Here is your dashboard for the latest updates and your activity.</p>
         </div>
     </div>
@@ -19,15 +19,16 @@ Tutor | Home
         <div class="col-md-4 mb-4">
             <div class="card h-100 shadow-lg">
                 <div class="card-body">
-                    <h5 class="card-title">Announcements</h5>
+                    <h5 class="card-title">Notifications</h5>
                     <ul class="list-group list-group-flush" style="animation: fadeInUp 0.5s;">
-                        <li class="list-group-item">Hostel Cleanliness Drive - 25th Sep</li>
-                        <li class="list-group-item">New Cafeteria Timings</li>
-                        <li class="list-group-item">Annual Hostel Fest Registration Open</li>
+                        {% for i in notification|slice:":4" %}
+                    <li class="list-group-item">{{forloop.counter}} : {{ i.notification }} - <span style="color:brown">{{ i.notification_date }}</span></li>
+                        {% endfor %}
+
                     </ul>
                 </div>
                 <div class="card-footer text-center">
-                    <a href="#" class="btn btn-primary btn-custom">View All</a>
+                    <a href="{% url 'student_view_notification' %}" class="btn btn-primary btn-custom">View All</a>
                 </div>
             </div>
         </div>

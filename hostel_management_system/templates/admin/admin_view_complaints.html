@@ -22,7 +22,7 @@ Admin | View Complaints
         {% for complaint in complaints %}
         <tr>
             <th scope="row">{{ forloop.counter }}</th>
-            <td>{{ complaint.STUDENT.name }}</td>
+            <td>{{ complaint.STUDENT.name|capfirst }}</td>
             <td>{{ complaint.date }}</td>
             <td>{{ complaint.complaint }}</td>
             <td>
@@ -33,10 +33,10 @@ Admin | View Complaints
                 {% endif %}
             </td>
             <td>
-                {% if complaint.replied_status %}
+                {% if complaint.reply != 'pending' %}
                 {{ complaint.reply }}
                 {% else %}
-                <a href="{% url 'reply_complaint' complaint.id %}" class="btn btn-primary">Reply</a>
+                <a href="{% url 'admin_reply_complaint' complaint.id %}" class="btn btn-primary">Reply</a>
                 {% endif %}
             </td>
         </tr>

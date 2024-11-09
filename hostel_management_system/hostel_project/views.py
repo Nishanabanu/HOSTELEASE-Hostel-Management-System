@@ -2,9 +2,13 @@ from django.shortcuts import render, HttpResponse, redirect,get_object_or_404
 from .models import *
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from datetime import datetime
+from django.db.models import Q
+from django.contrib import messages
 from django.utils import timezone
 from datetime import datetime
-from django.contrib import messages
+import razorpay
+from django.core.paginator import Paginator
 
 
 
@@ -35,7 +39,8 @@ def admin_home(request):
 
 def student_home(request):
     student = Student.objects.get(LOGIN__id=request.session['lid'])
-    return render(request, 'student/student_home.html',{'student':student})
+    notification = Notification.objects.filter(user_type='student').order_by('-id')
+    return render(request, 'student/student_home.html',{'student':student,'notification':notification})
 
 def warden_home(request):
     return render(request, 'warden/warden_home.html')
@@ -88,9 +93,9 @@ def user_login(request):
             elif user_role == 'blocked':
                 return HttpResponse('''<script>alert("Your Account is Blocked, Contact Warden"); window.location = "/";</script>''')
             else:
-                return HttpResponse('''<script>alert("Invalid"); window.location = "/";</script>''')
+                return redirect("/kmct_login_page")
         else:
-            return HttpResponse('''<script>alert("Invalid"); window.location = "/";</script>''')
+            return redirect("/kmct_login_page")
     else:
         return render(request, 'kmct/kmct_login_page.html')      
 
@@ -98,7 +103,7 @@ def user_login(request):
 #---------------------------------------------------------------------------------------------------------------------------------   
 # @login_required(login_url='/')    
 def admin_view_hostel(request):
-    assigned_hostels = Warden.objects.all()  # Hostels with assigned wardens
+    assigned_hostels = Warden.objects.filter(is_retired=False)  # Hostels with assigned wardens
     unassigned_hostels = Hostel.objects.filter(warden__isnull=True)  # Hostels without assigned wardens
     return render(request, 'admin/admin_view_hostel.html', {
         'assigned_hostels': assigned_hostels,
@@ -157,11 +162,83 @@ def admin_edit_hostel(request, id):
     courses = Course.objects.all()
     return render(request, 'admin/admin_edit_hostel.html', {'hostel': hostel, 'courses': courses})
 
+
+
+
+
+def admin_retire_warden(request, id):
+    warden = get_object_or_404(Warden, id=id)
+    
+    if request.method == "POST":
+        # Retire the warden and update details
+        warden.HOSTEL = None
+        warden.is_retired = True
+        warden.date_of_retirement = datetime.now()
+        warden.reason_for_retirement = request.POST.get('retirement_reason', 'No reason provided')  
+        warden.save()
+        
+        warden.LOGIN.role = 'pending'
+        warden.LOGIN.user_name = 'retired'
+        warden.LOGIN.save()
+        
+        return redirect('admin_view_wardens')
+    return render(request, 'admin/admin_view_wardens.html', {'warden': warden})
+
+
+
+
+
 #--------------------------------------------------------------------------------------------------------------------------------- 
-# @login_required(login_url='/')   
+# @login_required(login_url='/') 
+
+
+def admin_view_tutors(request):
+    # Active tutors associated with hostels
+    tutors = Tutor.objects.filter(COURSE__hostels__isnull=False, is_retired=False).distinct()
+    # Retired tutors associated with hostels
+    retired_tutors = Tutor.objects.filter(COURSE__hostels__isnull=False, is_retired=True).distinct()
+
+    context = {
+        'tutors': tutors,
+        'retired_tutors': retired_tutors
+    }
+    return render(request, 'admin/admin_view_tutors.html', context)
+
+
+
+
+  
 def admin_view_wardens(request):
-    warden_details = Warden.objects.all()
-    return render(request, 'admin/admin_view_wardens.html',{'warden_details':warden_details})
+    active_wardens = Warden.objects.filter(HOSTEL__isnull=False)
+    retired_wardens = Warden.objects.filter(HOSTEL__isnull=True)
+    
+    context = {
+        'active_warden_details': active_wardens,
+        'retired_warden_details': retired_wardens
+    }
+    return render(request, 'admin/admin_view_wardens.html', context)
+
+
+def admin_retire_tutor(request, id):
+    tutor = get_object_or_404(Tutor, id=id)
+
+    if request.method == "POST":
+        # Retire the tutor and update details
+        tutor.is_retired = True
+        tutor.date_of_retirement = timezone.now()  # Use timezone for accuracy
+        tutor.reason_for_retirement = request.POST.get('retirement_reason', 'No reason provided')
+        tutor.save()
+
+        # Optionally update the login role
+        tutor.LOGIN.role = 'pending'
+        tutor.LOGIN.user_name = 'retired'
+        tutor.LOGIN.save()
+
+        return redirect('admin_view_tutors')
+
+    return render(request, 'admin/admin_view_tutors.html', {'tutor': tutor})
+
+
 
 # @login_required(login_url='/')
 def admin_add_warden(request):
@@ -309,9 +386,7 @@ def admin_edit_course(request, id):
     return render(request, 'admin/admin_edit_course.html', {'course': course, 'departments': departments})
     
 # @login_required(login_url='/')
-def admin_view_tutors(request):
-    tutors = Tutor.objects.all()
-    return render(request, 'admin/admin_view_tutors.html', {'tutors':tutors})
+
 
 # @login_required(login_url='/')   
 def admin_add_tutor(request):
@@ -405,7 +480,7 @@ def get_courses_by_department(request):
     
 # @login_required(login_url='/')
 def admin_manage_complaints(request):
-    complaints = Complaint.objects.all()
+    complaints = Complaint.objects.filter(user_type='admin')
     return render(request, "admin/admin_view_complaints.html",{"complaints":complaints})
 
 # @login_required(login_url='/')
@@ -416,7 +491,7 @@ def admin_reply_complaint(request,id):
         complaint_object.reply = reply
         complaint_object.replied_status = True
         complaint_object.save()
-        return redirect('admin/admin_view_complaints.html')  # Redirect to the complaints list after replying
+        return redirect('admin_manage_complaints')  # Redirect to the complaints list after replying
     return render(request, 'admin/admin_reply_complaint.html', {'complaint_object': complaint_object})
         
 # @login_required(login_url='/')   
@@ -428,19 +503,47 @@ def admin_view_payments(request):
 def admin_send_payment_request(request):
     if request.method == 'POST':
         amount = request.POST.get('amount')
-        payments = Payment.objects.filter(status='Pending')
-        notification = Notification.objects.create(
-            notification = "THE HOSTEL FEES PAGE IS LIVE NOW TO MAKE PAYMENTS",
-            user_type = 'student'
-        )
-        notification.save()
+        students = Student.objects.all()  # Get all students
         
-        for payment in payments:
-            payment.amount = amount 
-            payment.is_requested = True
-            payment.save()
-        return redirect("/admin_view_payments")
+        # Create a notification
+        notification = Notification.objects.create(
+            notification="THE HOSTEL FEES PAGE IS LIVE NOW TO MAKE PAYMENTS",
+            user_type='student'
+        )
+        
+        for student in students:
+            # Create a new payment and associate it with the notification
+            Payment.objects.create(
+                STUDENT=student,
+                amount=amount,
+                status='Pending',
+                screenshot=None,  # or handle if you have a screenshot uploaded
+                is_requested=True,
+                NOTIFICATION=notification  # Link the notification
+            )
+        
+        return HttpResponse('''
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10">
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+            <script>
+                document.addEventListener("DOMContentLoaded", function() {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Request Sent',
+                        text: 'Payment request sent successfully',
+                        confirmButtonText: 'OK',
+                        reverseButtons: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.history.back();  
+                        }
+                    });
+                });
+            </script>
+        ''')
+    
     return render(request, 'admin/admin_view_payments.html')
+
     
 # @login_required(login_url='/')
 def admin_send_notification(request):
@@ -455,10 +558,44 @@ def admin_send_notification(request):
         return redirect("/admin_home")
     return render(request, 'admin/admin_send_notification.html')
    
+
+
+   
+   
 # @login_required(login_url='/')        
 def admin_view_students(request):
-    student_details = Room.objects.filter(STUDENT__COURSE__duration__in=[1, 3])
-    return render(request, 'admin/admin_view_students.html', {'student_details': student_details})
+    # Get all student details with related fields
+    student_details = Student.objects.select_related(
+        'COURSE', 'COURSE__DEPARTMENT'
+    ).prefetch_related(
+        'rooms', 'COURSE__hostels', 'rooms__HOSTEL', 'rooms__HOSTEL__warden_set'
+    ).all()
+
+    # Prepare data with associated details for each student
+    student_data = []
+    for student in student_details:
+        room = student.rooms.first() if student.rooms.exists() else None
+        hostel = room.HOSTEL if room else None
+        warden = hostel.warden_set.first() if hostel and hostel.warden_set.exists() else None
+        tutor = Tutor.objects.filter(COURSE=student.COURSE).first()
+        parent = Parent.objects.filter(STUDENT=student).first()
+
+        student_data.append({
+            'student': student,
+            'course': student.COURSE,
+            'room': room,
+            'hostel': hostel,
+            'warden': warden,
+            'tutor': tutor,
+            'parent': parent,
+        })
+
+    # Set up pagination with 4 students per page
+    paginator = Paginator(student_data, 4)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'admin/admin_view_students.html', {'page_obj': page_obj})
 
 # @login_required(login_url='/')
 def admin_view_alumini(request):
@@ -466,6 +603,27 @@ def admin_view_alumini(request):
     return render(request, 'admin/admin_view_alumini.html', {'alumini_details': alumini_details})
 
 #-------------------------------------------------------------------------------------------------------------------------------------
+
+def warden_view_leave(request):
+    warden = Warden.objects.get(LOGIN_id=request.session['lid'])
+    hostel = warden.HOSTEL
+    students = Student.objects.filter(COURSE__in=hostel.COURSE.all())
+    approved_leaves = LeavingRegister.objects.filter(STUDENT__in=students,status='approved').order_by('-start_date')
+    
+    return render(request, 'warden/warden_view_leaves.html', {
+        'warden': warden,
+        'approved_leaves': approved_leaves,
+    })
+
+def warden_view_local_movement(request):
+    warden = Warden.objects.get(LOGIN=request.session['lid'])
+    hostel = warden.HOSTEL
+    students = Student.objects.filter(COURSE__in=hostel.COURSE.all())
+    local_movements = LocalMovement.objects.filter(STUDENT__in=students).order_by('-date')
+    return render(request, 'warden/warden_view_localmovement.html', {
+        'warden': warden,
+        'local_movements': local_movements,
+    })
 
 def warden_view_profile(request):
     warden_id = request.session.get('lid')
@@ -477,7 +635,7 @@ def warden_view_profile(request):
 def warden_edit_profile(request):
     warden_id = request.session.get('lid')
     if not warden_id:
-        return HttpResponse('Warden ID not found in session.')
+        return redirect("/warden_view_profile")
 
     warden = Warden.objects.get(LOGIN__id=warden_id)
 
@@ -514,14 +672,110 @@ def warden_change_password(request):
             return HttpResponse('''<script>alert("Invalid old password"); window.location="/warden_change_password";</script>''')
     return render(request, 'warden/warden_change_password.html')
 
+def warden_manage_complaint(request):
+    warden = Warden.objects.get(LOGIN_id=request.session['lid'])
+    hostel = warden.HOSTEL    
+    rooms = Room.objects.filter(HOSTEL=hostel)
+    students = Student.objects.filter(rooms__in=rooms)
+    complaints = Complaint.objects.filter(STUDENT__in=students, user_type='warden')
+    return render(request, 'warden/send_reply.html', {'complaints': complaints})
+
+def warden_send_reply(request):
+    if request.method == 'POST':
+        complaint_id = request.POST.get('complaint_id')
+        reply = request.POST.get('reply')
+        
+        complaint = Complaint.objects.get(id=complaint_id)
+        complaint.reply = reply
+        complaint.save()
+        
+        return redirect('/warden_manage_complaint')
+    return redirect('/warden_manage_complaint')
+    
+    
+def warden_view_students(request):
+    if 'lid' in request.session:
+        warden = get_object_or_404(Warden, LOGIN__id=request.session['lid'])
+        # Fetch all rooms in the warden's hostel and the students in those rooms
+        rooms = Room.objects.filter(HOSTEL=warden.HOSTEL)
+        students = Student.objects.filter(rooms__in=rooms)  # Fetch students in these rooms
+        return render(request, 'warden/student_list.html', {
+            'students': students
+        })
+    else:
+        return render(request, 'warden/student_list.html', {
+            'error': "You need to log in to view this page."
+        })
+        
+        
+def warden_view_student_complete_history(request, student_id):
+    if 'lid' in request.session:
+        # Initialize variables
+        student = None
+        payments = None
+        parent = None
+        tutor = None
+        room = None
+        hostel = None
+        total_leaves = 0
+
+        try:
+            # Get the student by ID
+            student = Student.objects.get(id=student_id)
+
+            # Get payments related to the student
+            payments = Payment.objects.filter(STUDENT=student).order_by('-date')
+
+            # Get the parent of the student
+            try:
+                parent = Parent.objects.get(STUDENT=student)
+            except Parent.DoesNotExist:
+                parent = None  # Set to None if no parent found
+
+            # Get the tutor assigned to the student's course
+            tutor = Tutor.objects.filter(COURSE=student.COURSE).first()  # Get the first tutor for simplicity
+
+            # Get the room of the student
+            room = student.rooms.first()  # Assuming each student can belong to multiple rooms
+
+            # Get hostel details from the room
+            hostel = room.HOSTEL if room else None
+
+            # Count the total leaves of the student
+            total_leaves = LeavingRegister.objects.filter(STUDENT=student).count()
+
+            return render(request, 'warden/student_history.html', {
+                'student': student,
+                'payments': payments,
+                'parent': parent,
+                'tutor': tutor,
+                'hostel': hostel,
+                'room': room,
+                'total_leaves': total_leaves,
+            })
+        except Student.DoesNotExist:
+            return render(request, 'warden/student_history.html', {
+                'error': "Student not found."
+            })
+        except Exception as e:
+            return render(request, 'warden/student_history.html', {
+                'error': str(e)
+            })
+    else:
+        return render(request, 'warden/student_history.html', {
+            'error': "You need to log in to view this page."
+        })
+
+     
+        
+        
+        
 def warden_verify_student(request):
     warden = get_object_or_404(Warden, LOGIN=request.session['lid'])
     hostel = warden.HOSTEL
     
-    # Fetching all students related to the hostel's courses
-    students = Student.objects.filter(COURSE__in=hostel.COURSE.all())
+    students = Student.objects.filter(COURSE__in=hostel.COURSE.all()).order_by('-id')
     
-    # Get filter parameters from request
     search_course = request.GET.get('course', '')
     search_department = request.GET.get('department', '')
     
@@ -569,7 +823,7 @@ def warden_block_unblock_student(request):
     elif action == 'unblock':
         login_obj.role = 'student'
     login_obj.save()
-    return HttpResponse(f'<script>alert("Status updated to {login_obj.role}"); window.location="/warden_verify_student";</script>')
+    return redirect('/warden_verify_student')
 
     
 
@@ -577,12 +831,11 @@ def warden_add_new_room(request):
     warden = Warden.objects.get(LOGIN_id=request.session['lid']) 
     hostel = warden.HOSTEL 
     if request.method == "POST":
-        room_number = request.POST['room_number']
+        # room_number = request.POST['room_number']
         capacity = request.POST['capacity']
         image = request.FILES['image']
         
         room = Room.objects.create(
-            room_number=room_number,
             capacity=capacity,
             image=image,
             HOSTEL=hostel  
@@ -596,7 +849,7 @@ def warden_edit_room(request,room_id):
     hostel = warden.HOSTEL 
     room = Room.objects.get(id=room_id,HOSTEL=hostel)
     if request.method == 'POST':
-        room.room_number=request.POST['room_number']
+        # room.room_number=request.POST['room_number']
         room.capacity=request.POST['capacity']
         
         if 'image' in request.FILES:
@@ -605,8 +858,6 @@ def warden_edit_room(request,room_id):
         room.save()
         return redirect('/warden_view_rooms')
     return render(request, 'warden/warden_edit_room.html',{'room':room})
-
-
 
 def warden_view_rooms(request):
     warden = get_object_or_404(Warden, LOGIN_id=request.session['lid'])
@@ -630,7 +881,7 @@ def assign_student_to_room(request, student_id, room_id):
 
     # Check if the student is already assigned to a room
     if student.rooms.exists():
-        return HttpResponse("Student is already assigned to a room.", status=400)
+        return redirect("/assign_student_to_room")
 
     # Check if the hostel accepts the student's course
     if room.HOSTEL.COURSE.filter(id=student.COURSE.id).exists():
@@ -658,11 +909,15 @@ def remove_student_from_room(request, student_id, room_id):
         return redirect('warden_view_rooms')
     else:
         return HttpResponse("Student is not assigned to this room.", status=400)
+    
+def warden_view_notification(request):
+    notification = Notification.objects.filter(user_type='warden').order_by('-id')
+    return render(request, 'warden/warden_view_notification.html',{'notification':notification})
 
 
 def tutor_view_students(request):
-    tutor = Tutor.objects.get(LOGIN=request.session['lid'])  # Assuming user is logged in as a tutor
-    students = Student.objects.filter(COURSE=tutor.COURSE, year=tutor.year)  # Matching course and year
+    tutor = Tutor.objects.get(LOGIN=request.session['lid'])  
+    students = Student.objects.filter(COURSE=tutor.COURSE, year=tutor.year)
     
     context = {
         'students': students,
@@ -670,6 +925,55 @@ def tutor_view_students(request):
     }
     
     return render(request, 'tutor/tutor_view_students.html', context)
+
+def tutor_change_password(request):
+    if request.method == "POST":
+        old_password = request.POST.get('current_password')
+        new_password = request.POST.get('new_password')
+        confirm_password = request.POST.get('confirm_password')
+        new_username = request.POST.get('username')
+        
+        credentials = LoginTable.objects.filter(id=request.session['lid'], password=old_password)
+        if credentials.exists():
+            if new_password==confirm_password:
+                new_credentials = credentials.update(password=confirm_password,user_name=new_username)        
+                if new_credentials:
+                    return HttpResponse('''<script>alert("User Name and Password Changed"); window.location="/tutor_home";</script>''')
+                else:
+                    return HttpResponse('''<script>alert("Failed to change password"); window.location="/tutor_change_password";</script>''')
+            else:
+                return HttpResponse('''<script>alert("New password and confirm password do not match"); window.location="/tutor_change_password";</script>''')
+        else:
+            return HttpResponse('''<script>alert("Invalid old password"); window.location="/tutor_change_password";</script>''')
+    return render(request, 'tutor/tutor_change_password.html')
+
+def tutor_view_local_movement(request):
+    tutor = Tutor.objects.get(LOGIN=request.session['lid'])
+    students_in_course = Student.objects.filter(COURSE=tutor.COURSE)
+    local_movements = LocalMovement.objects.filter(STUDENT__in=students_in_course).order_by('-id')
+    return render(request, 'tutor/view_localmovement.html', {'local_movements': local_movements})
+
+
+
+def verify_leave_request(request):
+    tutor = Tutor.objects.get(LOGIN=request.session['lid'])  
+    students = Student.objects.filter(COURSE=tutor.COURSE, year=tutor.year)  
+    leaves = LeavingRegister.objects.filter(STUDENT__in=students,TUTOR=tutor).order_by('-start_date')
+    return render(request, 'tutor/view_leave_request.html',{'leaves':leaves})
+
+def tutor_accept_reject_leave(request):
+    leave_request = request.POST['leave_request']
+    action = request.POST['action']
+    
+    leave_obj = LeavingRegister.objects.get(id=leave_request)
+    
+    if action == 'accept':
+        leave_obj.status = 'approved'
+    elif action == 'reject':
+        leave_obj.status = 'rejected'
+    leave_obj.save()
+    return redirect('/verify_leave_request')
+    
 
 def assign_parent(request, id):
     student = Student.objects.get(id=id)  # Get the student by ID
@@ -718,9 +1022,62 @@ def tutor_edit_profile(request):
         tutor.save()
         return redirect('/tutor_view_profile')  # Redirect back to view profile after saving
     return render(request, 'tutor/edit_profile.html', {'tutor': tutor})
-            
-    
 
+
+def tutor_view_notification(request):
+    notification = Notification.objects.filter(user_type='tutor').order_by('-id')
+    return render(request, 'tutor/tutor_view_notification.html',{'notification':notification})
+
+def tutor_view_payments(request):
+    tutor_login_id = LoginTable.objects.get(id=request.session['lid'])
+    
+    try:
+        tutor = Tutor.objects.get(LOGIN_id=tutor_login_id)
+    except Tutor.DoesNotExist:
+        tutor = None
+
+    if tutor:
+        # Get the students associated with this tutor
+        students = Student.objects.filter(COURSE=tutor.COURSE)
+        # Get the payment history for these students
+        payments = Payment.objects.filter(STUDENT__in=students).order_by('-date')
+
+        return render(request, 'tutor/view_payments.html', {
+            'tutor_name': tutor.name,
+            'payments': payments,
+        })
+
+    return render(request, 'tutor/view_payments.html', {
+        'tutor_name': 'Tutor',
+        'payments': [],
+    })
+
+
+def parent_view_notification(request):
+    notification = Notification.objects.filter(user_type='parent').order_by('-id')
+    return render(request, 'parent/parent_view_notification.html',{'notification':notification})
+
+def parent_view_payments(request):
+    # Ensure the user is logged in and has a valid session
+    if 'lid' in request.session:
+        try:
+            # Get the parent associated with the logged-in user
+            parent = Parent.objects.get(LOGIN_id=request.session['lid'])
+            # Get the student's payments
+            payments = Payment.objects.filter(STUDENT=parent.STUDENT).order_by('-date')
+            
+            return render(request, 'parent/view_payments.html', {
+                'parent_name': parent.name,
+                'payments': payments
+            })
+        except Parent.DoesNotExist:
+            return render(request, 'parent/view_payments.html', {
+                'error': "Parent not found."
+            })
+    else:
+        return render(request, 'parent/view_payments.html', {
+            'error': "You need to log in to view this page."
+        })
 
 def parent_view_profile(request):
     parent_id = request.session['lid']  # Get the login ID from session
@@ -728,6 +1085,29 @@ def parent_view_profile(request):
     parent = Parent.objects.get(LOGIN=login)  # Retrieve the parent's profile
     student = parent.STUDENT  # Get the associated student
     return render(request, 'parent/parent_view_profile.html', {'parent': parent, 'student': student})
+
+def parent_change_password(request):
+    if request.method == "POST":
+        old_password = request.POST.get('current_password')
+        new_password = request.POST.get('new_password')
+        confirm_password = request.POST.get('confirm_password')
+        new_username = request.POST.get('username')
+        
+        credentials = LoginTable.objects.filter(id=request.session['lid'], password=old_password)
+        if credentials.exists():
+            if new_password==confirm_password:
+                new_credentials = credentials.update(password=confirm_password,user_name=new_username)        
+                if new_credentials:
+                    return HttpResponse('''<script>alert("User Name and Password Changed"); window.location="/parent_home";</script>''')
+                else:
+                    return HttpResponse('''<script>alert("Failed to change password"); window.location="/parent_change_password";</script>''')
+            else:
+                return HttpResponse('''<script>alert("New password and confirm password do not match"); window.location="/parent_change_password";</script>''')
+        else:
+            return HttpResponse('''<script>alert("Invalid old password"); window.location="/parent_change_password";</script>''')
+    return render(request, 'parent/parent_change_password.html')
+    
+
 
 def parent_edit_profile(request):
     parent_id = request.session['lid']  # Get the login ID from session
@@ -737,10 +1117,48 @@ def parent_edit_profile(request):
     if request.method == 'POST':
         parent.name = request.POST.get('name')
         parent.phone_number = request.POST.get('phone_number')
-        parent.save()  # Save the changes
-        return redirect('parent_view_profile')  # Redirect to the profile view
-
+        parent.save() 
+        return redirect('parent_view_profile')  
     return render(request, 'parent/parent_edit_profile.html', {'parent': parent})
+
+def view_student_details(request):
+    parent = Parent.objects.get(LOGIN_id=request.session['lid'])
+    student = parent.STUDENT
+    course = student.COURSE
+    department = course.DEPARTMENT
+
+    room = student.rooms.first()  
+    hostel = None
+    warden = None
+    
+    if room:
+        hostel = room.HOSTEL  
+        warden = Warden.objects.filter(HOSTEL=hostel, is_retired=False).first()
+
+    tutor = Tutor.objects.filter(COURSE=course, year=student.year).first()
+
+    return render(request, 'parent/parent_view_student.html', {
+        'student': student,
+        'course': course,
+        'department': department,
+        'hostel': hostel,
+        'room': room,
+        'tutor': tutor,
+        'warden': warden,  
+    })
+
+
+def parent_view_local_movement(request):
+    parent = Parent.objects.get(LOGIN_id=request.session['lid'])
+    student = parent.STUDENT
+    local_movements = LocalMovement.objects.filter(STUDENT=student).order_by('-date')
+    return render(request, 'parent/parent_view_local_movement.html', {'local_movements': local_movements, 'student': student, 'parent': parent})
+
+def parent_view_leave(request):
+    parent = Parent.objects.get(LOGIN_id=request.session['lid'])
+    student = parent.STUDENT
+    leave = LeavingRegister.objects.filter(STUDENT=student)  
+    return render(request, 'parent/parent_view_leave.html', {'leave': leave, 'student': student, 'parent': parent})
 
 
 def student_registration(request):
@@ -783,7 +1201,7 @@ def student_registration(request):
             admission_number=admission_number
         )
         student_details.save()
-        return HttpResponse('''<script>alert("Registration Successfully Completed"); window.location="/";</script>''')
+        return redirect('/')
     courses = Course.objects.all()
     return render(request, 'student/student_registration.html', {'courses': courses})
 
@@ -819,10 +1237,39 @@ def student_update_profile(request):
 
         if 'image' in request.FILES:
             student.image = request.FILES['image']
+            student.save()
 
         student.save()
-        return HttpResponse('''<script>alert("Profile Updated Successfully"); window.location="/student_view_profile";</script>''')
+        return redirect("/student_view_profile")
     return render(request, 'student/student_edit_profile.html', {'student': student})
+
+
+
+def student_change_password(request):
+    if request.method == "POST":
+        old_password = request.POST.get('current_password')
+        new_password = request.POST.get('new_password')
+        confirm_password = request.POST.get('confirm_password')
+        new_username = request.POST.get('username')
+        
+        credentials = LoginTable.objects.filter(id=request.session['lid'], password=old_password)
+        if credentials.exists():
+            if new_password==confirm_password:
+                new_credentials = credentials.update(password=confirm_password,user_name=new_username)        
+                if new_credentials:
+                    return HttpResponse('''<script>alert("User Name and Password Changed"); window.location="/student_home";</script>''')
+                else:
+                    return HttpResponse('''<script>alert("Failed to change password"); window.location="/student_change_password";</script>''')
+            else:
+                return HttpResponse('''<script>alert("New password and confirm password do not match"); window.location="/student_change_password";</script>''')
+        else:
+            return HttpResponse('''<script>alert("Invalid old password"); window.location="/student_change_password";</script>''')
+    return render(request, 'student/student_change_password.html')
+
+def student_view_notification(request):
+    notification = Notification.objects.filter(user_type='student').order_by('-id')
+    return render(request, 'student/view_notification.html',{'notification':notification})
+
 
 def student_manage_leave(request):
     student_id = request.session['lid']
@@ -836,22 +1283,52 @@ def add_leave(request):
     try:
         tutor = Tutor.objects.get(COURSE=student.COURSE, year=student.year)
     except Tutor.DoesNotExist:
-        tutor = None  # Handle case where no tutor is found
+        tutor = None
 
     if request.method == "POST":
         start_date = request.POST['start_date']
         end_date = request.POST['end_date']
         reason = request.POST['reason']
 
+        start_date = datetime.strptime(start_date, "%Y-%m-%dT%H:%M")
+        end_date = datetime.strptime(end_date, "%Y-%m-%dT%H:%M")
+
+        # Check if any overlapping leaves exist
+        overlapping_leaves = LeavingRegister.objects.filter(STUDENT=student,status__in=['pending', 'approved']).filter(
+        start_date__lte=end_date,end_date__gte=start_date)
+
+
+        if overlapping_leaves.exists():
+           return HttpResponse(''' 
+                            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10">
+                            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+                            <script>
+                                document.addEventListener("DOMContentLoaded", function() {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Not Possible',
+                                        text: 'A leave is already for the selected date',
+                                        confirmButtonText: 'OK',
+                                        reverseButtons: true
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            window.history.back();  
+                                        }
+                                    });
+                                });
+                            </script>
+                        ''')
+
+        # Create the leave request
         leave = LeavingRegister.objects.create(
             STUDENT=student,
-            TUTOR=tutor,  
+            TUTOR=tutor,
             start_date=start_date,
             end_date=end_date,
             reason=reason,
-            status='pending'  
+            status='pending'
         )
-        return redirect('/student_manage_leave')  
+        return redirect('student_manage_leave')
     return render(request, 'student/add_new_leave.html')
 
 def manage_local_movement(request):
@@ -916,6 +1393,53 @@ def update_entry_time(request, movement_id):
                 'error_message': error_message
             })
     return render(request, 'student/update_entry_time.html', {'movement': movement})
+
+
+
+def student_manage_complaint(request):
+    complaints = Complaint.objects.all().order_by('-id')
+    return render(request, 'student/student_manage_complaints.html',{'complaints':complaints})
+
+def student_add_new_complaint(request):
+    if request.method == 'POST':
+        STUDENT = Student.objects.get(LOGIN_id=request.session['lid'])
+        complaint = request.POST['complaint']
+        image = request.FILES['image']
+        user_type = request.POST['user_type']
+        
+        Complaint.objects.create(
+            STUDENT=STUDENT,
+            complaint=complaint,
+            reply='pending',
+            image=image,
+            user_type=user_type
+        )
+        return redirect('/student_manage_complaint')
+    return render(request, 'student/student_manage_complaints.html')
+
+def student_manage_payments(request):
+    student = Student.objects.get(LOGIN_id=request.session['lid'])
+    payments = Payment.objects.filter(STUDENT=student).order_by('-date')      
+    return render(request, 'student/manage_payments.html', {'payments': payments})
+
+def user_pay_proceed(request,id,amt):
+    request.session['rid'] = id
+    request.session['pay_amount'] = amt
+    client = razorpay.Client(auth=("rzp_test_edrzdb8Gbx5U5M", "XgwjnFvJQNG6cS7Q13aHKDJj"))
+    print(client)
+    payment = client.order.create({'amount': str(amt)+"00", 'currency': "INR", 'payment_capture': '1'})
+    return render(request,'student/UserPayProceed.html',{'p':payment,'val':[],"lid":request.session['lid'],"id":request.session['rid']})
+
+def on_payment_success(request):
+    request.session['rid'] = request.GET['id']
+    request.session['lid'] = request.GET['lid']
+    ob=Payment.objects.get(id=request.session['rid'])
+    ob.status='Paid'
+    ob.save()
+    return redirect("student/manage-payments")
+
+
+
 
 
 def delete(request,id):

@@ -1,0 +1,55 @@
+{% extends "tutor/base.html" %}
+{% load static %}
+{% block title %}
+Tutor | View Payments
+{% endblock title %}
+{% block name %}{{ tutor_name }}{% endblock name %}
+{% block body %}
+<style>
+    .payment-card {
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .payment-card:hover {
+        transform: scale(1.05);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+    }
+    
+    .card-header {
+        border-bottom: 2px solid #ffffff;
+    }
+    
+    .card-body {
+        text-align: left;
+    }
+    
+</style>
+<div class="container mt-4">
+    <h2 class="text-center">{{ tutor_name }}'s Students Payment History</h2>
+    
+    {% if payments %}
+        <div class="row">
+            {% for payment in payments %}
+                <div class="col-md-4">
+                    <div class="card mb-4 shadow-sm payment-card">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="card-title">{{ payment.STUDENT.name|capfirst }}</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">
+                                <strong>Amount:</strong> ₹{{ payment.amount }}<br>
+                                <strong>Status:</strong> {{ payment.status }}<br>
+                                <strong>Date:</strong> {{ payment.date }}<br>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center" role="alert">
+            No payment records found for your students.
+        </div>
+    {% endif %}
+</div>
+{% endblock body %}

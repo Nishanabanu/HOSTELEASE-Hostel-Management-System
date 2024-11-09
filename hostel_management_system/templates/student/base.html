@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Tutor | {% endblock %}</title>
+    <title>{% block title %}Student | {% endblock %}</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
@@ -264,11 +264,12 @@
     </style>
 </head>
 <body>
-    <div id="sidebar"><br><h2 style="font-family: cursive;margin-left:30px; color:white; font-size:medium;"><u>Hello, {{ request.session.student_name }}</h2><hr></u>
+    <div id="sidebar"><br><h2 style="font-family: cursive;margin-left:30px; color:white; font-size:medium;"><u>Hello, {{ request.session.student_name|capfirst }}</h2><hr></u>
         <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">Close the sidebar</a>
         <a href="{% url 'student_view_profile' %}">View Profile</a>
-        <a href="#">View Notification</a>
-        <a href="#">Change Password</a>
+        <a href="{% url 'student_view_notification' %}">View Notification</a>
+        <a href="{% url 'student_change_password' %}">Change Password</a>
+        <a href="{% url 'student_manage_payments' %}">Manage Payments</a>
 
     </div>
 
@@ -284,10 +285,10 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                     <div class="navbar-nav ml-auto">
-                        <a class="nav-item nav-link" href="{% url "student_home" %}">Home</a>
-                        <a class="nav-item nav-link" href="{% url "student_manage_leave" %}">Manage Leaves</a>
-                        <a class="nav-item nav-link" href="{% url "manage_local_movement" %}">Manage Local Movement</a>
-                        <a class="nav-item nav-link" href="#">Manage Complaint</a>
+                        <a class="nav-item nav-link" href="{% url 'student_home' %}">Home</a>
+                        <a class="nav-item nav-link" href="{% url 'student_manage_leave' %}">Manage Leaves</a>
+                        <a class="nav-item nav-link" href="{% url 'manage_local_movement' %}">Manage Local Movement</a>
+                        <a class="nav-item nav-link" href="{% url 'student_manage_complaint' %}">Manage Complaint</a>
                         <a href="{% url 'logout' %}" class="ml-auto">
                             <i class="fas fa-sign-out-alt" style="font-size:30px;color:red; margin-top:6px;"></i>
                         </a> 
