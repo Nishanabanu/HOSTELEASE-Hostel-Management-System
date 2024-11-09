@@ -1,0 +1,42 @@
+{% extends "admin/base.html" %}
+{% load static %}
+{% block title %}
+Warden | View Rooms
+{% endblock title %}
+{% block body %}
+
+<h1 style="text-align: center;">LIST OF ROOMS</h1>
+<a href="{% url 'admin_add_tutor' %}" class="btn btn-success" style="margin-left: 10px;">Add New Room</a>
+
+<div class="container" style="margin-top: 10px; margin-left:170px;">
+    <div class="row">
+        {% for tutor in tutors %}
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+                <div class="card" style="width: 18rem;">
+                    {% if tutor.image %}
+                        <img class="card-img-top" src="{{ room_list.image.url }}" style="height: 300px; width: 100%; object-fit: cover;">
+                    {% else %}
+                        <img class="card-img-top" src="/static/image.png" style="height: 300px; width: 100%; object-fit: cover;">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">CAPACITY : {{ tutor.name }}</h5>
+                        <p class="card-text">HOSTEL : {{ tutor.phone_number }}</p>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">DEPARTMENT : {{ tutor.COURSE.DEPARTMENT.name }}</li>
+                        <li class="list-group-item">COURSE : {{ tutor.COURSE.course_name }}</li>
+                        <li class="list-group-item">YEAR : {{ tutor.year }}</li>
+                    </ul>
+                    <div class="card-body text-center">
+                        <a href="{% url 'admin_edit_tutor' tutor.id %}" class="btn btn-primary">Edit</a>
+                    </div>
+                    
+                </div>
+            </div>&nbsp;&nbsp;&nbsp;
+        {% empty %}
+            <p>No Tutors found.</p>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock body %}
