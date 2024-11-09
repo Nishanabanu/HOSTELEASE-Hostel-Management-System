@@ -1,0 +1,58 @@
+{% extends "student/base.html" %}
+{% load static %}
+
+{% block title %}
+Student | Manage Leave
+{% endblock title %}
+
+{% block name %}{{ student.name }}{% endblock name %}
+
+{% block body %}
+<div class="container my-5">
+    <h2 class="text-center mb-4">Manage Leave Requests</h2>
+
+    <!-- Center the Add New Leave Request button -->
+    <div class="d-flex justify-content-center mb-3">
+        <a href="{% url 'add_leave' %}" class="btn btn-primary">Add New Leave Request</a>
+    </div>
+
+    {% if leave %}
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover text-center">
+            <thead class="thead-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Reason</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in leave %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ item.start_date|date:"d M Y, H:i" }}</td>
+                    <td>{{ item.end_date|date:"d M Y, H:i" }}</td>
+                    <td>{{ item.reason }}</td>
+                    <td>
+                        {% if item.status == 'approved' %}
+                        <span class="badge badge-success">Approved</span>
+                        {% elif item.status == 'rejected' %}
+                        <span class="badge badge-danger">Rejected</span>
+                        {% else %}
+                        <span class="badge badge-warning">Pending</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info text-center" role="alert">
+        No leave requests found.
+    </div>
+    {% endif %}
+</div>
+{% endblock body %}

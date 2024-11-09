@@ -1,0 +1,50 @@
+{% extends "tutor/base.html" %}
+{% load static %}
+{% block title %}
+Tutor | View Students
+{% endblock title %}
+{% block name %}{{tutor_name}}{% endblock name %}
+{% block body %}
+
+<table class="table table-bordered table-dark">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Name</th>
+        <th scope="col">Hostel</th>
+        <th scope="col">Room No</th>
+        <th scope="col">Phone No</th>
+        <th scope="col">Image</th>
+        <th scope="col">Parent Name</th>
+        <th scope="col">Parent Phone</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for student in students %}
+      <tr>
+        <th>{{ forloop.counter }}</th>
+        <td>{{ student.name }}</td>
+        <td>{{ student.rooms.first.HOSTEL.name }}</td>
+        <td>{{ student.rooms.first.room_number }}</td>
+        <td>{{ student.number }}</td>
+        <td><img src="{{ student.image.url }}" width="100" height="100"></td>
+        <td>
+          {% if student.parent_set.exists %}
+            {{ student.parent_set.first.name }}
+          {% else %}
+            <a href="{% url 'assign_parent' student.id %}">Assign Parent</a>
+          {% endif %}
+        </td>
+        <td>
+          {% if student.parent_set.exists %}
+            {{ student.parent_set.first.phone_number }}
+          {% else %}
+            Nil
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+</table>
+
+{% endblock body %}

@@ -27,6 +27,7 @@ class Course(models.Model):
     
     
 class Hostel(models.Model):
+    COURSE = models.ManyToManyField(Course, related_name='hostels')
     name = models.CharField(max_length=100)
     number = models.BigIntegerField()
     details = models.CharField(max_length=300)
@@ -66,14 +67,15 @@ class Student(models.Model):
 
     
 class Room(models.Model):
-    STUDENT = models.ForeignKey(Student, on_delete=models.CASCADE)
+    STUDENTS = models.ManyToManyField(Student, related_name="rooms", blank=True)  # Many-to-many relationship
     HOSTEL = models.ForeignKey(Hostel, on_delete=models.CASCADE)
     room_number = models.BigIntegerField()
     capacity = models.IntegerField()
-    image = models.ImageField(upload_to='room_images/') 
-    
+    image = models.ImageField(upload_to='room_images/')
+
     def __str__(self):
         return f'Room {self.room_number} - {self.HOSTEL.name}'
+
 
  
 class Tutor(models.Model):
@@ -108,7 +110,7 @@ class LateComer(models.Model):
 class LocalMovement(models.Model):
     STUDENT = models.ForeignKey(Student, on_delete=models.CASCADE)
     exit_time = models.TimeField()
-    entry_time = models.TimeField()
+    entry_time = models.TimeField(null=True, blank=True)
     date = models.DateField(auto_now_add=True)
     reason = models.CharField(max_length=300)
     

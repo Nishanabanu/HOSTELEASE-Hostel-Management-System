@@ -1,0 +1,113 @@
+{% extends "student/base.html" %}
+{% load static %}
+{% block title %}
+Student | Update Profile
+{% endblock title %}
+{% block name %}
+{{ student.name }}
+{% endblock name %}
+{% block body %}
+
+<div class="container mt-5">
+    <div class="row">
+        <!-- Update Profile Form -->
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow p-4">
+                <h3 class="card-title">Update Profile</h3>
+                <form method="POST" enctype="multipart/form-data" id="updateProfileForm">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="name">Name:</label>
+                        <input type="text" id="name" name="name" class="form-control" value="{{ student.name }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="number">Phone Number:</label>
+                        <input type="text" id="number" name="number" class="form-control" value="{{ student.number }}" required>
+                        <small class="text-danger" id="numberError" style="display: none;">Please enter a valid 10-digit phone number.</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="address">Address:</label>
+                        <input type="text" id="address" name="address" class="form-control" value="{{ student.address }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dob">Date of Birth:</label>
+                        <input type="date" id="dob" name="dob" class="form-control" value="{{ student.dob|date:'Y-m-d' }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="parent_phone_number">Parent Phone Number:</label>
+                        <input type="text" id="parent_phone_number" name="parent_phone_number" class="form-control" value="{{ student.parent_phone_number }}" required>
+                        <small class="text-danger" id="parentNumberError" style="display: none;">Please enter a valid 10-digit phone number.</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="image">Profile Image:</label>
+                        <input type="file" id="image" name="image" accept=".jpg, .jpeg, .png"  style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
+                        <small id="image_error" class="text-danger" style="display:none;">Only JPG, JPEG, or PNG files are allowed.</small>
+                        <small class="text-muted">Current Image: <img src="{{ student.image.url }}" class="img-thumbnail" width="150" alt="{{ student.name }}"></small>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary mt-3">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Validate phone number on keyup
+        $('#number, #parent_phone_number').on('keyup', function() {
+            var inputField = $(this);
+            var errorField = inputField.is('#number') ? '#numberError' : '#parentNumberError';
+            var value = inputField.val();
+
+            // Validate the phone number
+            if (value.length !== 10 || !/^\d+$/.test(value)) {
+                $(errorField).show(); // Show error message
+            } else {
+                $(errorField).hide(); // Hide error message
+            }
+        });
+
+        $('#updateProfileForm').on('submit', function(e) {
+            // Prevent submission if there's an error
+            if ($('#numberError').is(':visible') || $('#parentNumberError').is(':visible')) {
+                e.preventDefault(); // Prevent form submission
+            }
+        });
+    });
+</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Image validation for file type
+        $('#image').on('change', function() {
+            var file = $(this).val();
+            var allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;  // Allow jpg, jpeg, png
+
+            if (!allowedExtensions.exec(file)) {
+                $('#image_error').show();  // Show error if invalid
+                $(this).val('');  // Clear the file input
+            } else {
+                $('#image_error').hide();  // Hide error if valid
+            }
+        });
+
+        // Form submission validation (optional redundancy)
+        $('form').on('submit', function(e) {
+            var file = $('#image').val();
+            var allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
+
+            if (!allowedExtensions.exec(file)) {
+                e.preventDefault();  // Prevent form submission if invalid
+                $('#image_error').show();
+            }
+        });
+    });
+</script>
+{% endblock body %}

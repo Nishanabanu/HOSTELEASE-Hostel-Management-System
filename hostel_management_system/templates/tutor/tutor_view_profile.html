@@ -1,0 +1,56 @@
+{% extends "tutor/base.html" %}
+{% load static %}
+{% block title %}
+Tutor | View Profile
+{% endblock title %}
+{% block name %}{{ tutor.name }}{% endblock name %}
+{% block body %}
+
+<div class="container mt-5">
+    <div class="row">
+        <!-- Profile Image -->
+        <div class="col-md-4">
+            <div class="card shadow">
+                <img src="{{ tutor.image.url }}" class="card-img-top img-fluid" alt="{{ tutor.name }}">
+                <div class="card-body text-center">
+                    <h3 class="card-title">{{ tutor.name }}</h3>
+                    <p class="card-text"><strong>ID Number: </strong>{{ tutor.id_number }}</p>
+                    <p class="card-text"><strong>Course: </strong>{{ tutor.COURSE.course_name }}</p>
+                    <p class="card-text"><strong>Year: </strong>{{ tutor.year }}</p>
+                    <p class="card-text"><strong>Phone: </strong>{{ tutor.phone_number }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Details -->
+        <div class="col-md-8">
+            <div class="card shadow p-4">
+                <h3 class="card-title">Profile Details</h3>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <tr>
+                            <th>Department</th>
+                            <td>{{ tutor.COURSE.DEPARTMENT.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Course</th>
+                            <td>{{ tutor.COURSE.course_name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Year</th>
+                            <td>{{ tutor.year }}</td>
+                        </tr>
+                        <tr>
+                            <th>User Name</th>
+                            <td>{{ tutor.LOGIN.user_name }}</td>
+                        </tr>
+                        
+                    </table>
+                </div>
+                <a href="{% url "tutor_edit_profile" %}" class="btn btn-primary mt-3">Edit Profile</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock body %}

@@ -1,0 +1,98 @@
+{% extends "tutor/base.html" %}
+{% load static %}
+{% block title %}
+Tutor | Edit Profile
+{% endblock title %}
+{% block name %}{{ tutor.name }}{% endblock name %}
+{% block body %}
+
+<div class="container mt-5">
+    <div class="row">
+        <!-- Profile Form -->
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow p-4">
+                <h3 class="card-title">Edit Profile</h3>
+                <form method="POST" enctype="multipart/form-data" id="editProfileForm">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="name">Name:</label>
+                        <input type="text" id="name" name="name" class="form-control" value="{{ tutor.name }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone_number">Phone Number:</label>
+                        <input type="text" id="phone_number" name="phone_number" class="form-control" value="{{ tutor.phone_number }}" required>
+                        <small class="text-danger" id="phoneError" style="display: none;">Please enter a valid 10-digit phone number.</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="image">Profile Image:</label>
+                        <input type="file" id="image" name="image" class="form-control-file">
+                        <small class="text-muted">Current Image: <img src="{{ tutor.image.url }}" class="img-thumbnail" width="150" alt="{{ tutor.name }}"></small>
+                        <small class="text-danger" id="imageError" style="display: none;">Only jpg, jpeg, and png files are allowed.</small>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary mt-3">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#editProfileForm').on('submit', function(e) {
+            var phoneNumber = $('#phone_number').val();
+            var fileInput = $('#image').val();
+            var fileExtension = fileInput.split('.').pop().toLowerCase();
+            var validExtensions = ['jpg', 'jpeg', 'png'];
+            var isValid = true; // Flag to track validity
+
+            // Validate phone number
+            if (phoneNumber.length !== 10 || !/^\d+$/.test(phoneNumber)) {
+                e.preventDefault(); // Prevent form submission
+                $('#phoneError').show(); // Show error message
+                isValid = false; // Mark as invalid
+            } else {
+                $('#phoneError').hide(); // Hide error message
+            }
+
+            // Validate image file extension
+            if (fileInput && $.inArray(fileExtension, validExtensions) === -1) {
+                e.preventDefault(); // Prevent form submission
+                $('#imageError').show(); // Show error message
+                isValid = false; // Mark as invalid
+            } else {
+                $('#imageError').hide(); // Hide error message
+            }
+
+            // If both validations are valid, allow form submission
+            return isValid;
+        });
+
+        // Show error messages during typing
+        $('#phone_number').on('keyup', function() {
+            var phoneNumber = $(this).val();
+            if (phoneNumber.length !== 10 || !/^\d+$/.test(phoneNumber)) {
+                $('#phoneError').show(); // Show error message
+            } else {
+                $('#phoneError').hide(); // Hide error message
+            }
+        });
+
+        $('#image').on('change', function() {
+            var fileInput = $(this).val();
+            var fileExtension = fileInput.split('.').pop().toLowerCase();
+            var validExtensions = ['jpg', 'jpeg', 'png'];
+
+            if (fileInput && $.inArray(fileExtension, validExtensions) === -1) {
+                $('#imageError').show(); // Show error message
+            } else {
+                $('#imageError').hide(); // Hide error message
+            }
+        });
+    });
+</script>
+
+{% endblock body %}

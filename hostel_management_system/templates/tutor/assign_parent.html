@@ -1,0 +1,79 @@
+{% extends "tutor/base.html" %}
+{% load static %}
+{% block title %}
+Tutor | Assign Parent
+{% endblock title %}
+{% block name %}{{tutor_name}}{% endblock name %}
+{% block body %}
+
+<div class="container">
+    <h2 class="my-4">Assign Parent for {{ student.name|capfirst }}</h2>
+
+    <form method="POST" id="assignParentForm">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="parent_name">Parent Name:</label>
+                    <input type="text" id="parent_name" name="parent_name" class="form-control" required>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="phone_number">Parent Phone Number:</label>
+                    <input type="text" id="phone_number" name="phone_number" class="form-control" required>
+                    <small id="phone_error" class="text-danger" style="display:none;">Please enter a valid 10-digit phone number.</small>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="user_name">User Name:</label>
+                    <input type="text" id="user_name" name="user_name" class="form-control" required>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" class="form-control" required>
+                </div>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Assign Parent</button>
+    </form>
+</div>
+
+<!-- jQuery validation script -->
+<!-- jQuery validation script -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Real-time validation for phone number
+        $('#phone_number').on('input', function() {
+            var phone = $(this).val();
+            // Regular expression for exactly 10 digits
+            var phonePattern = /^[0-9]{10}$/;
+            
+            if (!phonePattern.test(phone)) {
+                $('#phone_error').show();  // Show error if not valid
+            } else {
+                $('#phone_error').hide();  // Hide error if valid
+            }
+        });
+
+        // Form submission validation
+        $('#assignParentForm').on('submit', function(e) {
+            var phone = $('#phone_number').val();
+            var phonePattern = /^[0-9]{10}$/;
+
+            if (!phonePattern.test(phone)) {
+                e.preventDefault();  // Prevent form submission if invalid
+                $('#phone_error').show();  // Show error message
+            }
+        });
+    });
+</script>
+
+
+{% endblock body %}

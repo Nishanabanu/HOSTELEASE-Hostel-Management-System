@@ -10,6 +10,8 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <style>
         /* Navbar Customization */
         .navbar {
@@ -103,10 +105,166 @@
             text-transform: uppercase;
             margin-bottom: 10px;
         }
+        .card {
+            border-radius: 10px;
+        }
+        
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+        
+        .card-body {
+            padding: 15px;
+        }
+        
+        .card img {
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .card {
+                margin-bottom: 20px;
+            }
+        }        .room-card {
+            border: 3px solid green;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .room-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+        }
+        .room-image img {
+            border: 2px solid green;
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            margin-bottom: 20px;
+        }
+        .capacity {
+            color: #00bfff;
+            font-weight: bold;
+        }
+        .student-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .student-list li {
+            color: #00bfff;
+            margin: 5px 0;
+        }
+        .btn-custom-edit {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .btn-custom-assign {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .btn-custom-edit:hover {
+            background-color: #218838;
+        }
+        .btn-custom-assign:hover {
+            background-color: #0056b3;
+        }
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Card Section */
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .card img {
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .card-body h5 {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .card-body p {
+            color: #666;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #193447;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        footer a {
+            color: #f1f1f1;
+            margin: 0 10px;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Button Animations */
+        .btn-custom {
+            background-color: #007bff;
+            color: white;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .btn-custom:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+
     </style>
 </head>
 <body>
-    <div id="sidebar"><br><h2 style="font-family: cursive;margin-left:30px; color:white; font-size:medium;"><u>Hello, {{ user_name }}</h2><hr></u>
+    <div id="sidebar"><br><h2 style="font-family: cursive;margin-left:30px; color:white; font-size:medium;"><u>Hello, {{ request.session.warden_name }}</h2><hr></u>
         <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">Close the sidebar</a>
         <a href="{% url 'warden_view_profile' %}">View Profile</a>
         <a href="#">View Leave</a>
@@ -120,7 +278,7 @@
             <nav class="navbar navbar-expand-lg navbar-dark">
                 <button class="openbtn" onclick="openNav()">&#9776;</button>
                 <a class="navbar-brand">
-                    <img style="background-color: white; margin-left:10px;" src="../static/kmct/logo black new.png" alt="Logo" width="50" height="50" class="d-inline-block align-text-top">
+                    <img style="background-color: white; margin-left:10px;" src="/static/kmct/logo black new.png" alt="Logo" width="50" height="50" class="d-inline-block align-text-top">
                 Hostel Ease </a> 
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -128,7 +286,7 @@
                 <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                     <div class="navbar-nav ml-auto">
                         <a class="nav-item nav-link" href="{% url 'warden_home' %}">Home</a>
-                        <a class="nav-item nav-link" href="#">Verify Students</a>
+                        <a class="nav-item nav-link" href="{% url 'warden_verify_student' %}">Verify Students</a>
                         <a class="nav-item nav-link" href="{% url 'warden_view_rooms' %}">Manage Rooms</a>
                         <a class="nav-item nav-link" href="#">Manage Notifications</a>
                         <a class="nav-item nav-link" href="#">Manage Complaints</a>
@@ -212,5 +370,7 @@
             document.getElementById("main").style.marginLeft= "0";
         }
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>

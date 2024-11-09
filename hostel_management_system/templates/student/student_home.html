@@ -1,0 +1,152 @@
+{% extends "student/base.html" %}
+{% load static %}
+{% block title %}
+Tutor | Home
+{% endblock title %}
+{% block name %}{{student_name}}{% endblock name %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <h1 class="display-4 mb-4">Welcome, {{ request.session.student_name }}!</h1>
+            <p class="lead">Here is your dashboard for the latest updates and your activity.</p>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <!-- Announcements Section -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-lg">
+                <div class="card-body">
+                    <h5 class="card-title">Announcements</h5>
+                    <ul class="list-group list-group-flush" style="animation: fadeInUp 0.5s;">
+                        <li class="list-group-item">Hostel Cleanliness Drive - 25th Sep</li>
+                        <li class="list-group-item">New Cafeteria Timings</li>
+                        <li class="list-group-item">Annual Hostel Fest Registration Open</li>
+                    </ul>
+                </div>
+                <div class="card-footer text-center">
+                    <a href="#" class="btn btn-primary btn-custom">View All</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Events Section -->
+        {% comment %} <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-lg">
+                <div class="card-body">
+                    <h5 class="card-title">Upcoming Events</h5>
+                    <div style="animation: fadeInDown 0.5s;">
+                        <p><i class="fas fa-calendar-alt"></i> Orientation Day - 1st Oct</p>
+                        <p><i class="fas fa-calendar-alt"></i> Hostel Sports Meet - 15th Oct</p>
+                        <p><i class="fas fa-calendar-alt"></i> Farewell Party - 30th Oct</p>
+                    </div>
+                </div>
+                <div class="card-footer text-center">
+                    <a href="#" class="btn btn-primary btn-custom">View Notification</a>
+                </div>
+            </div>
+        </div> {% endcomment %}
+
+        <!-- Profile Section -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-lg">
+                <div class="card-body text-center" style="animation: fadeIn 1s;">
+                    <img src="{{student.image.url}}" class="rounded-circle mb-3" alt="Profile Image" width="140" height="120">
+                    <h5 class="card-title">{{ request.session.student_name }}</h5>
+                    <p class="text-muted">{{ request.session.student_id }}</p>
+                </div>
+                <div class="card-footer text-center">
+                    <a href="{% url 'student_view_profile' %}" class="btn btn-success btn-custom">View Profile</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <!-- Quick Links Section -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 shadow-lg">
+                <div class="card-body">
+                    <h5 class="card-title">Quick Links</h5>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <a href="{% url 'student_manage_leave' %}"><i class="fas fa-calendar-check"></i> Manage Leaves</a>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="{% url 'manage_local_movement' %}"><i class="fas fa-walking"></i> Local Movements</a>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="#"><i class="fas fa-exclamation-circle"></i> Manage Complaints</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Leave Stats Section -->
+        {% comment %} <div class="col-md-6 mb-4">
+            <div class="card h-100 shadow-lg">
+                <div class="card-body">
+                    <h5 class="card-title">Leave Statistics</h5>
+                    <div class="progress mb-3">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: 60%" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100">60% Used</div>
+                    </div>
+                    <p class="text-muted">You have used 60% of your allocated leaves.</p>
+                </div>
+                <div class="card-footer text-center">
+                    <a href="{% url 'student_manage_leave' %}" class="btn btn-warning btn-custom">Manage Leaves</a>
+                </div>
+            </div>
+        </div> {% endcomment %}
+    </div>
+</div>
+
+<!-- Custom Animations -->
+<style>
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .btn-custom {
+        transition: background-color 0.3s, transform 0.3s;
+    }
+
+    .btn-custom:hover {
+        transform: scale(1.05);
+    }
+
+    .card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 12px 16px rgba(0, 0, 0, 0.2);
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends "parent/base.html" %}
+{% load static %}
+{% block title %}
+Parent | View Profile
+{% endblock title %}
+{% block name %}
+{{ parent.name }}
+{% endblock name %}
+{% block body %}
+
+<div class="container mt-5">
+    <div class="row">
+        <!-- Profile Image -->
+        <div class="col-md-4">
+            <div class="card shadow">
+                <img src="{{ parent.STUDENT.image.url }}" class="card-img-top img-fluid" alt="{{ parent.STUDENT.name }}">
+                <div class="card-body text-center">
+                    <h3 class="card-title">{{ parent.name }}</h3>
+                    <p class="card-text"><strong>Phone: </strong>{{ parent.phone_number }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Student Details -->
+        <div class="col-md-8">
+            <div class="card shadow p-4">
+                <h3 class="card-title">Student Details</h3>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <tr>
+                            <th>Student Name</th>
+                            <td>{{ student.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Admission Number</th>
+                            <td>{{ student.admission_number }}</td>
+                        </tr>
+                        <tr>
+                            <th>Course</th>
+                            <td>{{ student.COURSE.course_name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Year</th>
+                            <td>{{ student.year }}</td>
+                        </tr>
+                    </table>
+                </div>
+                <a href="{% url 'parent_edit_profile'%}" class="btn btn-primary mt-3">Edit Profile</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock body %}

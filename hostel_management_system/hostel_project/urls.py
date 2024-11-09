@@ -4,6 +4,8 @@ from . import views
 urlpatterns = [
     path('',views.kmct_home,name='kmct_home'),
     path('kmct_login_page',views.kmct_login_page,name='kmct_login_page'),
+    path('kmct_about_page',views.kmct_about_page,name='kmct_about_page'),
+    path('kmct_gallery_page',views.kmct_gallery_page,name='kmct_gallery_page'),
     path('user_login',views.user_login,name='login'),
     path('admin_home',views.admin_home,name='admin_home'),
     path('logout',views.logout,name='logout'),
@@ -48,12 +50,37 @@ path('warden_view_profile',views.warden_view_profile,name='warden_view_profile')
 path('warden_edit_profile',views.warden_edit_profile,name='warden_edit_profile'),
 path('warden_change_password',views.warden_change_password,name='warden_change_password'),
 path('warden_verify_student',views.warden_verify_student,name='warden_verify_student'),
-path('warden_view_rooms',views.warden_view_rooms,name='warden_view_rooms'),
+
+path('warden_view_rooms/', views.warden_view_rooms, name='warden_view_rooms'),
+path('assign_student_to_room/<int:student_id>/<int:room_id>/', views.assign_student_to_room, name='assign_student_to_room'),
+path('warden_edit_room/<int:room_id>/', views.warden_edit_room, name='warden_edit_room'),
+path('warden_add_new_room/', views.warden_add_new_room, name='warden_add_new_room'),
+path('remove_student_from_room/<int:student_id>/<int:room_id>/', views.remove_student_from_room, name='remove_student_from_room'),
+
+path('warden_accept_reject_student',views.warden_accept_reject_student,name='warden_accept_reject_student'),
+path('warden_block_unblock_student',views.warden_block_unblock_student,name='warden_block_unblock_student'),
 
 
+#----------------------------------------------------------------------------------------------------------------------------------
+path('tutor_view_students',views.tutor_view_students,name="tutor_view_students"),
+path('assign_parent/<int:id>',views.assign_parent,name="assign_parent"),
+path('tutor_view_profile',views.tutor_view_profile,name="tutor_view_profile"),
+path('tutor_edit_profile',views.tutor_edit_profile,name="tutor_edit_profile"),
 
-path('student_registration',views.student_registration,name='student_registration')
+#----------------------------------------------------------------------------------------------------------------------------------
+path('parent_view_profile',views.parent_view_profile,name="parent_view_profile"),
+path('parent_edit_profile',views.parent_edit_profile,name="parent_edit_profile"),
 
+#---------------------------------------------------------------------------------------------------------------------------------
+path('student_registration',views.student_registration,name='student_registration'),
+path('student_view_profile',views.student_view_profile,name='student_view_profile'),
+path('student_update_profile',views.student_update_profile,name='student_update_profile'),
+path('student_manage_leave',views.student_manage_leave,name='student_manage_leave'),
+path('add_leave',views.add_leave,name='add_leave'),
+path('manage-local-movement/',views.manage_local_movement, name='manage_local_movement'),
+path('local_movement/',views.manage_local_movement, name='manage_local_movement'),
+path('local_movement/update/<int:movement_id>/', views.update_entry_time, name='update_entry_time'),
+path('delete/<id>', views.delete, name='delete'),
 
 
 

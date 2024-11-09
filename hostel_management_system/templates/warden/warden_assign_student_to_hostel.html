@@ -1,0 +1,31 @@
+{% extends "warden/base.html" %}
+{% load static %}
+
+{% block title %}
+Warden | Assign Student 
+{% endblock title %}
+
+{% block body %}
+<div class="container mt-4">
+    <h2 class="mb-4">Assign Student to Hostel</h2>
+    
+    {% if available_room %}
+        <div class="alert alert-success" role="alert">
+            <strong>Success!</strong> Student <strong>{{ student.name }}</strong> has been successfully assigned to room <strong>{{ available_room.room_number }}</strong> in hostel <strong>{{ hostel.name }}</strong>.
+        </div>
+    {% elif error_message %}
+        <div class="alert alert-danger" role="alert">
+            <strong>Error:</strong> {{ error_message }}
+        </div>
+    {% else %}
+        <div class="alert alert-info" role="alert">
+            Waiting for student assignment...
+        </div>
+    {% endif %}
+    
+    <hr>
+    
+    <!-- Back to the Hostel Overview or Student List -->
+    <a href="{% url 'warden_view_students' %}" class="btn btn-primary mt-3">Back to Students List</a>
+</div>
+{% endblock body %}

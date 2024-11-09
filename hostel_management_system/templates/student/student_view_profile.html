@@ -1,0 +1,104 @@
+{% extends "student/base.html" %}
+{% load static %}
+{% block title %}
+Student | View Profile
+{% endblock title %}
+{% block name %}{{ student.name }}{% endblock name %}
+{% block body %}
+
+<div class="container mt-5">
+    <div class="row">
+        <!-- Profile Image and Basic Details -->
+        <div class="col-md-4">
+            <div class="card shadow mb-4">
+                <img src="{{ student.image.url }}" class="card-img-top img-fluid" alt="{{ student.name }}">
+                <div class="card-body text-center">
+                    <h3 class="card-title">{{ student.name }}</h3>
+                    <p class="card-text"><strong>ID Number: </strong>{{ student.admission_number }}</p>
+                    <p class="card-text"><strong>Phone: </strong>{{ student.number }}</p>
+                    <p class="card-text"><strong>Parent Phone: </strong>{{ student.parent_phone_number }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Profile Information -->
+        <div class="col-md-8">
+            <div class="card shadow p-4">
+                <h3 class="card-title">Profile Details</h3>
+                <div class="table-responsiv">
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>Department</th>
+                            <td>{{ student.COURSE.DEPARTMENT.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Course</th>
+                            <td>{{ student.COURSE.course_name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Year</th>
+                            <td>{{ student.year }}</td>
+                        </tr>
+                        <tr>
+                            <th>Date of Birth</th>
+                            <td>{{ student.dob }}</td>
+                        </tr>
+                        <tr>
+                            <th>Address</th>
+                            <td>{{ student.address }}</td>
+                        </tr>
+                        <tr>
+                            <th>User Name</th>
+                            <td>{{ student.LOGIN.user_name }}</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- Edit Profile Button -->
+                <a href="{% url 'student_update_profile' %}" class="btn btn-primary mt-3">Edit Profile</a>
+            </div>
+
+            <!-- Tutor Details -->
+            <div class="card shadow p-4 mt-4">
+                <h3 class="card-title">Tutor Details</h3>
+                {% if tutor %}
+                    <p><strong>Tutor Name:</strong> {{ tutor.name }}</p>
+                    <p><strong>Tutor Phone Number:</strong> {{ tutor.phone_number }}</p>
+                {% else %}
+                    <p>No tutor assigned for this course and year.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Course Details Section -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card shadow p-4">
+                <h3 class="card-title">Course Details</h3>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <tr>
+                            <th>Course Name</th>
+                            <td>{{ course.course_name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Department</th>
+                            <td>{{ course.DEPARTMENT.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Course Type</th>
+                            <td>{{ course.type }}</td>
+                        </tr>
+                        <tr>
+                            <th>Duration</th>
+                            <td>{{ course.duration }} years</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock body %}

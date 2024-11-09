@@ -40,7 +40,7 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">
-                <img src="../static/kmct/logo black new.png" alt="Logo" width="25" height="25" class="d-inline-block align-text-top">
+                <img src="/static/kmct/logo black new.png" alt="Logo" width="25" height="25" class="d-inline-block align-text-top">
                 HostelEase
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -49,16 +49,16 @@
             <div style="margin-left: 800px;" class="collapse navbar-collapse justify-content-center" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">Home</a>
+                        <a class="nav-link active" aria-current="page" href="{% url "kmct_home" %}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">About Us</a>
+                        <a class="nav-link" href="{% url "kmct_about_page" %}">About Us</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Contact Us</a>
+                        <a class="nav-link" href="#footers">Contact Us</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Gallery</a>
+                        <a class="nav-link" href="{% url "kmct_gallery_page" %}">Gallery</a>
                     </li>
                 </ul>
             </div>
@@ -174,7 +174,7 @@
     }
     </script>
 
-
+<div id="footers">
     <footer class="container-fluid" style="margin-top: 20px;">
         <div class="row text-center text-md-left">
             <div class="col-md-2 col-sm-2 lg-2">
@@ -235,6 +235,7 @@
             </div>
         </div>
       </footer>
+    </div>
 
     <!-- Bootstrap JS and dependencies -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>

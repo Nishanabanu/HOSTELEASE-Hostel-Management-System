@@ -5,7 +5,7 @@ Admin | Add Tutor
 {% endblock title %}
 {% block body %}
 
-<form method="POST" action="{% url 'admin_add_tutor' %}" enctype="multipart/form-data" style="max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+<form method="POST" id="add_tutor" action="{% url 'admin_add_tutor' %}" enctype="multipart/form-data" style="max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
     {% csrf_token %}
     <h2 style="text-align: center; margin-bottom: 20px;">Add Tutor</h2>
     <div class="form-group" style="display: flex; flex-direction: column; gap: 15px;">
@@ -16,12 +16,14 @@ Admin | Add Tutor
         <label for="tutor_id" style="font-weight: bold;">Id Number:</label>
         <input type="number" name="tutor_id" placeholder="Id Number" autocomplete="off" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
 
-        <label for="tutor_phone" style="font-weight: bold;">Phone number</label>
-        <input type="number" name="tutor_phone" placeholder="Phone Number" autocomplete="off" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
-
-        <label for="image" style="font-weight: bold;">Image</label>
-        <input type="file" name="image" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
-        
+        <label for="phone" style="font-weight: bold;">Phone:
+            <input type="number"  required name="tutor_phone" id="phone_number" placeholder="Phone" autocomplete="off" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
+            <small id="phone_error" class="text-danger" style="display:none;">Please enter a valid 10-digit phone number.</small>
+        </label>
+        <label for="image" style="font-weight: bold;">Image:
+            <input type="file" id="image" name="image" accept=".jpg, .jpeg, .png" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
+            <small id="image_error" class="text-danger" style="display:none;">Only JPG, JPEG, or PNG files are allowed.</small>
+        </label>
         <label for="department" style="font-weight: bold;">Department:</label>
         <select name="department" id="department" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
             <option value="">--Select Department--</option>
@@ -82,5 +84,60 @@ Admin | Add Tutor
         });
     });
 </script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Real-time validation for phone number
+        $('#phone_number').on('input', function() {
+            var phone = $(this).val();
+            // Regular expression for exactly 10 digits
+            var phonePattern = /^[0-9]{10}$/;
+            
+            if (!phonePattern.test(phone)) {
+                $('#phone_error').show();  // Show error if not valid
+            } else {
+                $('#phone_error').hide();  // Hide error if valid
+            }
+        });
 
+        // Form submission validation
+        $('#add_tutor').on('submit', function(e) {
+            var phone = $('#phone_number').val();
+            var phonePattern = /^[0-9]{10}$/;
+
+            if (!phonePattern.test(phone)) {
+                e.preventDefault();  // Prevent form submission if invalid
+                $('#phone_error').show();  // Show error message
+            }
+        });
+    });
+</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Image validation for file type
+        $('#image').on('change', function() {
+            var file = $(this).val();
+            var allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;  // Allow jpg, jpeg, png
+
+            if (!allowedExtensions.exec(file)) {
+                $('#image_error').show();  // Show error if invalid
+                $(this).val('');  // Clear the file input
+            } else {
+                $('#image_error').hide();  // Hide error if valid
+            }
+        });
+
+        // Form submission validation (optional redundancy)
+        $('form').on('submit', function(e) {
+            var file = $('#image').val();
+            var allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
+
+            if (!allowedExtensions.exec(file)) {
+                e.preventDefault();  // Prevent form submission if invalid
+                $('#image_error').show();
+            }
+        });
+    });
+</script>
 {% endblock body %}

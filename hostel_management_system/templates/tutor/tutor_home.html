@@ -1,0 +1,53 @@
+{% extends "tutor/base.html" %}
+{% load static %}
+{% block title %}
+Tutor | Home
+{% endblock title %}
+{% block name %}{{tutor_name}}{% endblock name %}
+{% block body %}
+
+
+<!-- Features Section -->
+<div id="features" class="container mt-5">
+    <h2 class="text-center mb-4">Hostel Management Features</h2>
+    <div class="row">
+        <!-- Card 1 -->
+        <div class="col-md-4 mb-4">
+            <div class="card animate__animated animate__fadeInUp">
+                <img src="/static/hostel/students.png" class="card-img-top" alt="Manage Students">
+                <div class="card-body text-center">
+                    <h5 class="card-title">View Students</h5>
+                    <p class="card-text">Easily view your student's details.<br> Get realtime access to their details </p>
+                    <a href="{% url  'tutor_view_students' %}" class="btn btn-custom">Students</a>
+                </div>
+            </div>
+        </div>
+        <!-- Card 2 -->
+        <div class="col-md-4 mb-4">
+            <div class="card animate__animated animate__fadeInUp">
+                <img src="/static/leave.png" class="card-img-top" alt="Manage Rooms">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Manage Leaves</h5>
+                    <p class="card-text">View leave request send by Students. And verify if it is necessary</p>
+                    <a href="#" class="btn btn-custom">Leaves</a>
+                </div>
+            </div>
+        </div>
+        <!-- Card 3 -->
+        <div class="col-md-4 mb-4">
+            <div class="card animate__animated animate__fadeInUp">
+                <img src="/static/hostel/notification.webp" class="card-img-top" alt="Manage Notifications">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Manage Notifications</h5>
+                    <p class="card-text">Don't miss the important updates and alerts <br> For you</p>
+                    <a href="#" class="btn btn-custom">Notifications</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+{% endblock body %}

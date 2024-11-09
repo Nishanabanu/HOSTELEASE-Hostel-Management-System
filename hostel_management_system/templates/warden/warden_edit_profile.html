@@ -83,13 +83,15 @@ Warden | Edit Profile
 <div class="container">
     <div class="edit-profile-card">
         <h2>Edit Warden Profile</h2>
-        <form method="post" enctype="multipart/form-data">
+        <form method="post" enctype="multipart/form-data" id="warden_edit_profile">
             {% csrf_token %}
             <label for="name">Name</label>
             <input type="text" id="name" name="name" value="{{ warden.name }}" required>
 
             <label for="phone">Phone</label>
-            <input type="text" id="phone" name="phone" value="{{ warden.phone }}" required>
+            <input type="text" id="phone_number" name="phone" value="{{ warden.phone }}" >
+            <small id="phone_error" class="text-danger" style="display:none;">Please enter a valid 10-digit phone number.</small>
+
 
             <label for="address">Address</label>
             <input type="text" id="address" name="address" value="{{ warden.address }}" required>
@@ -105,4 +107,33 @@ Warden | Edit Profile
         <a href="javascript:history.back()" class="btn-back">Cancel</a>
     </div>
 </div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Real-time validation for phone number
+        $('#phone_number').on('input', function() {
+            var phone = $(this).val();
+            // Regular expression for exactly 10 digits
+            var phonePattern = /^[0-9]{10}$/;
+            
+            if (!phonePattern.test(phone)) {
+                $('#phone_error').show();  // Show error if not valid
+            } else {
+                $('#phone_error').hide();  // Hide error if valid
+            }
+        });
+
+        // Form submission validation
+        $('#warden_edit_profile').on('submit', function(e) {
+            var phone = $('#phone_number').val();
+            var phonePattern = /^[0-9]{10}$/;
+
+            if (!phonePattern.test(phone)) {
+                e.preventDefault();  // Prevent form submission if invalid
+                $('#phone_error').show();  // Show error message
+            }
+        });
+    });
+</script>
+
 {% endblock body %}

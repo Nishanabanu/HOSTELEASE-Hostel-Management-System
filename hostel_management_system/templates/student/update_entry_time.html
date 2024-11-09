@@ -1,0 +1,29 @@
+{% extends "student/base.html" %}
+{% load static %}
+
+{% block title %}
+Update Entry Time
+{% endblock title %}
+
+{% block name %}{{ movement.STUDENT.name }}{% endblock name %}
+
+{% block body %}
+<div class="container my-5">
+    <h2 class="text-center mb-4">Update Entry Time</h2>
+
+    {% if error_message %}
+    <div class="alert alert-danger" role="alert">
+        {{ error_message }}
+    </div>
+    {% endif %}
+
+    <form method="POST" action="{% url 'update_entry_time' movement.id %}">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="entry_time">Entry Time</label>
+            <input type="time" id="entry_time" name="entry_time" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Update Entry Time</button>
+    </form>
+</div>
+{% endblock body %}

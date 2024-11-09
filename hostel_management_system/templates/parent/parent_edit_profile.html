@@ -1,0 +1,62 @@
+{% extends "parent/base.html" %}
+{% load static %}
+{% block title %}
+Parent | Edit Profile
+{% endblock title %}
+{% block name %}
+{{ parent.name }}
+{% endblock name %}
+{% block body %}
+
+<div class="container mt-5">
+    <div class="row">
+        <!-- Profile Form -->
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow p-4">
+                <h3 class="card-title">Edit Profile</h3>
+                <form method="POST" enctype="multipart/form-data" id="editProfileForm">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="name">Name:</label>
+                        <input type="text" id="name" name="name" class="form-control" value="{{ parent.name }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone_number">Phone Number:</label>
+                        <input type="text" id="phone_number" name="phone_number" class="form-control" value="{{ parent.phone_number }}" required>
+                        <small class="text-danger" id="phoneError" style="display: none;">Please enter a valid 10-digit phone number.</small>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary mt-3">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#editProfileForm').on('submit', function(e) {
+            var phoneNumber = $('#phone_number').val();
+            if (phoneNumber.length !== 10 || !/^\d+$/.test(phoneNumber)) {
+                e.preventDefault(); // Prevent form submission
+                $('#phoneError').show(); // Show error message
+            } else {
+                $('#phoneError').hide(); // Hide error message
+            }
+        });
+
+        // Show error message on keyup
+        $('#phone_number').on('keyup', function() {
+            var phoneNumber = $(this).val();
+            if (phoneNumber.length !== 10 || !/^\d+$/.test(phoneNumber)) {
+                $('#phoneError').show();
+            } else {
+                $('#phoneError').hide();
+            }
+        });
+    });
+</script>
+
+{% endblock body %}

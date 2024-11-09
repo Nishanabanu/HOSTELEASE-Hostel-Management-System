@@ -1,0 +1,66 @@
+{% extends "student/base.html" %}
+{% load static %}
+
+{% block title %}
+Student | Add Leave Request
+{% endblock title %}
+
+{% block name %}{{ student.name }}{% endblock name %}
+
+{% block body %}
+<div class="container my-5">
+    <h2 class="text-center mb-4">Add New Leave Request</h2>
+
+    <form method="POST" action="{% url 'add_leave' %}" id="leaveForm">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="start_date">Start Date</label>
+            <input type="datetime-local" id="start_date" name="start_date" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="end_date">End Date</label>
+            <input type="datetime-local" id="end_date" name="end_date" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="reason">Reason for Leave</label>
+            <textarea id="reason" name="reason" class="form-control" rows="3" required></textarea>
+        </div>
+        <div id="error-message" class="alert alert-danger d-none"></div>
+        <button type="submit" class="btn btn-primary">Submit Leave Request</button>
+    </form>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const form = document.getElementById('leaveForm');
+        const startDateInput = document.getElementById('start_date');
+        const endDateInput = document.getElementById('end_date');
+        const errorMessage = document.getElementById('error-message');
+
+        // Set minimum date to today for the start date
+        const today = new Date().toISOString().slice(0, 16);
+        startDateInput.setAttribute('min', today);
+
+        form.addEventListener('submit', function(event) {
+            const startDate = new Date(startDateInput.value);
+            const endDate = new Date(endDateInput.value);
+            const currentDateTime = new Date();
+
+            // Clear previous error messages
+            errorMessage.classList.add('d-none');
+            errorMessage.innerText = '';
+
+            // Validation checks
+            if (startDate < currentDateTime) {
+                event.preventDefault();
+                errorMessage.innerText = 'Start date cannot be in the past.';
+                errorMessage.classList.remove('d-none');
+            } else if (endDate <= startDate) {
+                event.preventDefault();
+                errorMessage.innerText = 'End date must be greater than the start date and cannot be the same day.';
+                errorMessage.classList.remove('d-none');
+            }
+        });
+    });
+</script>
+{% endblock body %}

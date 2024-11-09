@@ -1,0 +1,82 @@
+{% extends "student/base.html" %}
+{% load static %}
+
+{% block title %}
+Student | Manage Local Movements
+{% endblock title %}
+
+{% block name %}{{ student.name }}{% endblock name %}
+
+{% block body %}
+<div class="container my-5">
+    <h2 class="text-center mb-4">Manage Local Movements</h2>
+
+    <!-- Display Error Message if Exit Time is Invalid -->
+    {% if error_message %}
+    <div class="alert alert-danger" role="alert">
+        {{ error_message }}
+    </div>
+    {% endif %}
+
+    <!-- Form to Add New Local Movement -->
+    <form method="POST" action="{% url 'manage_local_movement' %}" class="mb-4">
+        {% csrf_token %}
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="exit_time">Exit Time</label>
+                <input type="time" id="exit_time" name="exit_time" class="form-control" required>
+            </div>
+            {% comment %} <div class="form-group col-md-4">
+                <label for="entry_time">Entry Time (Optional)</label>
+                <input type="time" id="entry_time" name="entry_time" class="form-control">
+            </div> {% endcomment %}
+            <div class="form-group col-md-4">
+                <label for="reason">Reason</label>
+                <input type="text" id="reason" name="reason" class="form-control" required>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Add Local Movement</button>
+    </form>
+
+    {% if local_movements %}
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover text-center">
+            <thead class="thead-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Date</th>
+                    <th>Exit Time</th>
+                    <th>Entry Time</th>
+                    <th>Reason</th>
+                    {% comment %} <th>Delete</th> {% endcomment %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for movement in local_movements %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ movement.date|date:"d M Y" }}</td>
+                    <td>{{ movement.exit_time }}</td>
+                    <td>
+                        {% if movement.entry_time == None %}
+                            <a href="{% url 'update_entry_time' movement.id %}">Add Entry Time</a>
+                        {% else %}
+                            {{ movement.entry_time }}
+                        {% endif %}
+                    </td>
+                    <td>{{ movement.reason }}</td>
+                    {% comment %} <td><a href="/delete/{{movement.id}}"> Delete</a></td> {% endcomment %}
+
+                </tr>
+                {% endfor %}
+            </tbody>
+            
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info text-center" role="alert">
+        No local movements found.
+    </div>
+    {% endif %}
+</div>
+{% endblock body %}
