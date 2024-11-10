@@ -1,1 +1,5 @@
-# HOSTELEASE-Hostel-Management-System
+The hostel managment system is a web application desinged to transform and enhance managment of the ladies hostel at KMCT college of engineering. The primary goal of the hostel Managment system is to modernize various aspects of hostel administration, including student management, movement tracking, leave requests, room assignments, payment processing and complaint handling.
+
+Student managment keeps all student details in on place, making it easy to update and check their information and room assignments. Movement tracking lets students log their movements online, helping wardens keep track of where students are leave request allows students to request leave online wardens and tutors can quickly approve or deny these requests through the system. Room assignments manages how rooms are allocated to students. The system tracks which rooms are available and assigns them accordingly payment processing enables students to pay hostel fees online. The system keeps track of payments and outstanding balances complaint handling allows students to submit and track complaint online. This makes it easier for administrators to address issues quickly and keep records of complaints.
+
+Overall, the hostel management system aims to make hostel management simpler and more efficient for everyone involved.
